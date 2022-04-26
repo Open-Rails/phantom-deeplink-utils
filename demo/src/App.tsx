@@ -1,10 +1,11 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { whatever } from 'phantom-dl-wrapper'
+// import { whatever } from 'phantom-deeplink-utils'
+import something from 'phantom-deeplink-utils'
 
 function App() {
-  whatever()
+  console.log(something)
 
   return (
     <div className="App">

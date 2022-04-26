@@ -1,7 +1,9 @@
 {
-  "name": "phantom-dl-wrapper",
+  "name": "phantom-deeplink-utils-repo",
   "version": "0.1.0",
-  "main": "index.js",
   "author": "Open Rails",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "cd demo && yarn start"
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "phantom-deep-linking-demo",
+  "name": "phantom-deeplink-utils-demo",
   "version": "0.1.0",
   "author": "OpenRails",
   "private": true,
@@ -11,6 +11,7 @@
     "@types/node": "^16.11.29",
     "@types/react": "^18.0.7",
     "@types/react-dom": "^18.0.0",
+    "phantom-deeplink-utils": "^0.1.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.1",
