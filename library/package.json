@@ -1,6 +1,6 @@
 {
   "name": "phantom-deeplink-utils",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "OpenRails Inc",
   "description": "Provides a convenient window.solana object and communicates with phantom wallet via a redirect flow rather than direct provider-injection.",
   "license": "MIT",
