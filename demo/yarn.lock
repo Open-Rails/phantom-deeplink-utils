@@ -6319,10 +6319,10 @@ performance-now@^2.1.0:
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-phantom-deeplink-utils@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/phantom-deeplink-utils/-/phantom-deeplink-utils-0.1.0.tgz#a2331b725a41a3eeadc3e385d100bfe4b6b5eb58"
-  integrity sha512-SjpTb3ylZIPlaWVrnAAZ+rM0oMQtJ0UXOVvH3OhiOwsCKCkFTELfenS866xUIj1tBknu36LClhnNyK21j1rf2w==
+phantom-deeplink-utils@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/phantom-deeplink-utils/-/phantom-deeplink-utils-0.1.2.tgz#c3ede2543e373b42c3cdcd2221e399f215713a10"
+  integrity sha512-oEFnBJdklM5auAQO0EYOhsIlJxEthqlUdUOM0OyUb98WnF7z6zaJNR+MPTwcgi/qv2lYOwiUvk5SFQPbxJ780w==
 
 picocolors@^0.2.1:
   version "0.2.1"
