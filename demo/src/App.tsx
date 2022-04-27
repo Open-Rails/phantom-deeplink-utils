@@ -4,6 +4,7 @@ import './App.css'
 import something from 'phantom-deeplink-utils'
 
 function App() {
+  something.whatever()
   console.log(something)
 
   return (
