@@ -4,3 +4,12 @@
 **/build/
 **/lib/
 .env
+
+# Yarn 2.0
+.pnp.*
+**/.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions

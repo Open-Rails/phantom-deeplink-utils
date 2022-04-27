@@ -1,7 +1,7 @@
 {
   "name": "phantom-deeplink-utils-repo",
   "version": "0.1.2",
-  "author": "Open Rails",
+  "author": "OpenRails",
   "license": "MIT",
   "scripts": {
     "start": "cd demo && yarn start"
