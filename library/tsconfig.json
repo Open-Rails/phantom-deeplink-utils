@@ -6,6 +6,7 @@
     "declaration": true,
     "declarationDir": "lib/types",
     "sourceMap": true,
+    "stripInternal": true,
     "moduleResolution": "node",
     "jsx": "react",
     "strict": true,
