@@ -1,20 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "module": "esnext",
-    "outDir": "lib/esm",
     "declaration": true,
-    "declarationDir": "lib/types",
-    "sourceMap": true,
-    "stripInternal": true,
-    "moduleResolution": "node",
-    "jsx": "react",
-    "strict": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "typeRoots": ["node_modules/@types"]
+    "emitDeclarationOnly": true,
+    "declarationMap": true,
+    "outDir": "lib/types"
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["./src/index.ts"]
 }
