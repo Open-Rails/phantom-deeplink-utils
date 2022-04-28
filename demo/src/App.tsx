@@ -1,11 +1,10 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import something from 'phantom-deeplink-utils'
+import { whatever } from 'rollup-hello-world2'
 
 function App() {
-  something.whatever()
-  console.log(something)
+  whatever()
 
   return (
     <div className="App">

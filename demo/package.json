@@ -11,6 +11,7 @@
     "@types/node": "^16.11.29",
     "@types/react": "^18.0.7",
     "@types/react-dom": "^18.0.0",
+    "framer-motion": "^6.3.3",
     "phantom-deeplink-utils": "^0.1.7",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",

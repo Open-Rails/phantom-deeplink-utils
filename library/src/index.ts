@@ -1,10 +1,3 @@
-import { whatever } from './hello-world'
-import { anotherOne } from './another-one'
-import defaultName from './default-test'
-
-export { whatever, anotherOne, defaultName }
-
-// export default
-
-// export default { HelloWorld }
-// export { type default as MyModule } from './hello-world'
+export { whatever } from './hello-world'
+export { anotherOne } from './another-one'
+export { defaultName } from './default-test'
