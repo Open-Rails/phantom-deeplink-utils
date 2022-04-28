@@ -1,6 +1,6 @@
 {
   "name": "rollup-hello-world2",
-  "version": "0.1.26",
+  "version": "0.1.27",
   "description": "silly description",
   "license": "MIT",
   "sideEffects": false,
@@ -17,24 +17,25 @@
   },
   "files": [
     "lib",
+    "dist",
     "LICENSE"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "clean": "rimraf lib",
+    "build:clean": "rimraf lib dist",
     "declarations": "tsc -p tsconfig.json",
     "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts' --out-dir 'lib/esm' --source-maps",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'lib/cjs' --source-maps",
     "build:bundles": "cross-env BABEL_ENV=esmBundled rollup -c",
-    "build": "yarn clean && rollup -c && yarn postbuild",
-    "postbuild": "echo {\"type\":\"commonjs\", \"types\":\"../types/index.d.ts\"} | json > lib/cjs/package.json && echo {\"type\":\"module\", \"types\":\"../types/index.d.ts\"} | json > lib/esm/package.json",
+    "build": "yarn build:clean && tsc -p . && rollup -c",
     "generate-barrels": "barrelsby --delete --directory ./src"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.2.1",
+    "@rollup/plugin-replace": "^4.0.0",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
@@ -44,6 +45,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.70.2",
     "rollup-plugin-dts": "^4.2.0",
+    "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.31.2",
     "shx": "^0.3.4",
     "ts-node": "^10.7.0",
