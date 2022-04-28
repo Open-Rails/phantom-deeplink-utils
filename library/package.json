@@ -1,6 +1,6 @@
 {
   "name": "rollup-hello-world2",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "silly description",
   "license": "MIT",
   "main": "lib/cjs/index.js",
@@ -23,7 +23,8 @@
     "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts' --out-dir 'lib/esm' --source-maps",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'lib/cjs' --source-maps",
     "build:bundles": "cross-env BABEL_ENV=esmBundled rollup -c",
-    "build": "yarn clean && rollup -c"
+    "build": "yarn clean && rollup -c && yarn postbuild",
+    "postbuild": "echo {\"type\":\"commonjs\"} | json > lib/cjs/package.json && echo {\"type\":\"module\"} | json > lib/esm/package.json"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.2",
