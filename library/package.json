@@ -1,21 +1,33 @@
 {
-  "name": "rollup-hello-world",
-  "version": "0.1.8",
+  "name": "rollup-hello-world2",
+  "version": "0.1.9",
   "description": "silly description",
+  "author": "OpenRails",
   "license": "MIT",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
+  "type": "module",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "types": "lib/esm/index.d.ts",
+  "exports": {
+    "import": "./lib/esm/index.js",
+    "require": "./lib/cjs/index.js"
+  },
   "files": [
-    "dist"
+    "lib",
+    "src",
+    "LICENSE"
   ],
-  "types": "dist/esm/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "clean": "rimraf lib",
     "declarations": "tsc -p tsconfig.json",
     "build:esm": "cross-env BABEL_ENV=esmUnbundled babel src --extensions '.ts' --out-dir 'lib/esm' --source-maps",
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'lib/cjs' --source-maps",
     "build:bundles": "cross-env BABEL_ENV=esmBundled rollup -c",
-    "build": "rollup -c"
+    "build": "yarn clean && rollup -c && yarn postbuild",
+    "postbuild": "echo {\"type\":\"commonjs\"} | json > lib/cjs/package.json && echo {\"type\":\"module\"} | json > lib/esm/package.json"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.2",

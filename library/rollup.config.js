@@ -10,13 +10,15 @@ export default {
   input: "src/index.ts",
   output: [
     {
-      dir: "dist/cjs",
+      dir: "lib/cjs",
       format: "cjs",
+      exports: 'named',
       sourcemap: true,
     },
     {
-      dir: "dist/esm",
+      dir: "lib/esm",
       format: "esm",
+      exports: 'named',
       sourcemap: true,
     },
   ],
