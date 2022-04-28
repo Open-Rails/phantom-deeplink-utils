@@ -1,6 +1,6 @@
 {
   "name": "rollup-hello-world2",
-  "version": "0.1.34",
+  "version": "0.1.35",
   "description": "silly description",
   "license": "MIT",
   "sideEffects": false,
@@ -30,7 +30,7 @@
     "build:cjs": "cross-env BABEL_ENV=cjs babel src --extensions '.ts' --out-dir 'lib/cjs' --source-maps",
     "build:bundles": "cross-env BABEL_ENV=esmBundled rollup -c",
     "build": "yarn build:clean && tsc -p . && rollup -c && yarn postbuild",
-    "postbuild": "echo {\"type\":\"commonjs\", \"types\":\"../types/index.d.ts\"} | json > dist/cjs/package.json && echo {\"type\":\"module\", \"types\":\"../types/index.d.ts\"} | json > dist/esm/package.json",
+    "postbuild": "echo {\"type\":\"commonjs\", \"types\":\"../../types/index.d.ts\"} | json > dist/cjs/package.json && echo {\"type\":\"module\", \"types\":\"../../types/index.d.ts\"} | json > dist/esm/package.json",
     "generate-barrels": "barrelsby --delete --directory ./src"
   },
   "devDependencies": {
