@@ -1,14 +1,19 @@
 {
   "name": "rollup-hello-world2",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "description": "silly description",
   "license": "MIT",
+  "sideEffects": false,
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "types": "lib/types/index.d.ts",
   "exports": {
-    "import": "./lib/esm/index.js",
-    "require": "./lib/cjs/index.js"
+    ".": {
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.js",
+      "default": "./lib/cjs/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "lib",
