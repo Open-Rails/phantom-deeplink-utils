@@ -10,12 +10,12 @@ export default {
   input: "src/index.ts",
   output: [
     {
-      dir: "dist/cjs",
+      dir: "lib/cjs",
       format: "cjs",
       sourcemap: true,
     },
     {
-      dir: "dist/esm",
+      dir: "lib/esm",
       format: "esm",
       sourcemap: true,
     },
@@ -23,7 +23,7 @@ export default {
   plugins: [
     resolve(),
     commonjs(),
-    typescript({ tsconfig: "./tsconfig.json" }),
+    typescript({ tsconfig: "./tsconfig.json", useTsconfigDeclarationDir: true }),
   ],
   watch: {
     include: "src/**/*",
