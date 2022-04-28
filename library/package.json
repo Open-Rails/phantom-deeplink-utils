@@ -1,6 +1,6 @@
 {
   "name": "rollup-hello-world2",
-  "version": "0.1.40",
+  "version": "0.1.41",
   "description": "silly description",
   "license": "MIT",
   "sideEffects": false,
