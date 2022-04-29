@@ -1,6 +1,6 @@
 {
   "name": "phantom-deeplink-utils",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "not production ready",
   "license": "MIT",
   "sideEffects": false,
