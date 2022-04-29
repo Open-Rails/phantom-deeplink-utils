@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -17,10 +13,13 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    // "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "disableReferencedProjectLoad": false /* Reduce the number of projects loaded automatically by TypeScript. */,
+    "incremental": true
   },
-  "include": [
-    "src"
-  ]
+  // "references": [{ "path": "../phantom-deeplink-utils" }],
+  "include": ["src"]
 }

@@ -1,0 +1,11 @@
+{
+  "exclude": ["packages/**/tests/**", "packages/**/dist/**"],
+  "references": [
+    {
+      "path": "./packages/phantom-deeplink-utils"
+    },
+    { 
+      "path": "./packages/phantom-deeplink-utils-demo"
+    }
+  ]
+}

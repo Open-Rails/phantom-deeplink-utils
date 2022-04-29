@@ -1,11 +1,15 @@
-import React from 'react'
-import logo from './logo.svg'
-import './App.css'
-import something from 'phantom-deeplink-utils'
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import * as Something from "phantom-deeplink-utils";
+
+Something.helloWorld("", 2);
+Something.anotherOne()
 
 function App() {
-  something.whatever()
-  console.log(something)
+  Something.anotherOne();
+  console.log(Something);
+  Something.defaultTest();
 
   return (
     <div className="App">
@@ -24,7 +28,7 @@ function App() {
         </a>
       </header>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
