@@ -10,6 +10,8 @@ Give it a few days, thanks everyone.
 
 3. For some reason 'yarn publish' inside of /library no longer works. npm publish works, and yarn publish used to work, but now it fails for unknown reasons.
 
+4. TSconfig does not like how src/index is importing files for some reason https://stackoverflow.com/questions/60029058/project-must-list-all-files-or-use-an-include-pattern we are running into the same problem. It might be related to composite: true in tsconfig.json, however turning this on or off hasn't seemed to help at all.
+
 Note: for usability of the library, I believe it is slightly better to have named exports in the index.ts rather than wild-card \* exports. However it's not a huge difference.
 
 Scripts:
