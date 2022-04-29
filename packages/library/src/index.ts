@@ -1,9 +1,13 @@
+export { default as connect } from './utils/connect'
+export * from './utils/connect'
 
-export { default as helloWorld } from "./helloWorld";
-export * from "./helloWorld";
+export { default as disconnect } from './utils/disconnect'
+export * from './utils/disconnect'
 
-export { default as anotherOne } from "./anotherOne";
-export * from "./anotherOne";
+export { default as DeepLinking } from './utils/index'
+export * from './utils/index'
 
-export { default as defaultTest } from "./defaultTest";
-export * from "./defaultTest";
+export { default as signAndSendTransaction } from './utils/signAndSendTransaction'
+export * from './utils/signAndSendTransaction'
+
+export * from './utils/util'
