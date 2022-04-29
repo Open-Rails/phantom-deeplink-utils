@@ -17,12 +17,18 @@ export default defineConfig(
       },
       {
         dir: "dist/esm",
-        format: "esm",
+        format: "module",
         sourcemap: true,
       },
       {
         dir: "dist/iife",
         format: "iife",
+        sourcemap: true,
+        name:"PhantomDeepLinkingUtils"
+      },
+      {
+        dir: "dist/bundle",
+        format: "umd",
         sourcemap: true,
         name:"PhantomDeepLinkingUtils"
       },

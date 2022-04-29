@@ -3,13 +3,13 @@
   "version": "0.2.1",
   "description": "silly description",
   "license": "MIT",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "browser":"dist/iife/index.js",
+  "main": "dist/bundle/index.js",
+  "module": "dist/bundle/index.js",
+  "browser":"dist/bundle/index.js",
   "files": [
     "dist/*"
   ],
-  "types": "dist/esm/index.d.ts",
+  "types": "dist/bundle/index.d.ts",
   "scripts": {
     "clean": "rimraf lib",
     "declarations": "tsc -p tsconfig.json",
@@ -21,7 +21,7 @@
   },
   "exports": {
     ".": {
-      "default": "./dist/ejs/index.js"
+      "default": "./dist/bundle/index.js"
     }
   },
   "devDependencies": {
