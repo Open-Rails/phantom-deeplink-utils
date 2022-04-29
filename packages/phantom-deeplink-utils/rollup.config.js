@@ -10,22 +10,22 @@ export default defineConfig(
   {
     input: "src/index.ts",
     output: [
-      {
-        dir: "dist/cjs",
-        format: "cjs",
-        sourcemap: true,
-      },
-      {
-        dir: "dist/esm",
-        format: "module",
-        sourcemap: true,
-      },
-      {
-        dir: "dist/iife",
-        format: "iife",
-        sourcemap: true,
-        name:"PhantomDeepLinkingUtils"
-      },
+      // {
+      //   dir: "dist/cjs",
+      //   format: "cjs",
+      //   sourcemap: true,
+      // },
+      // {
+      //   dir: "dist/esm",
+      //   format: "module",
+      //   sourcemap: true,
+      // },
+      // {
+      //   dir: "dist/iife",
+      //   format: "iife",
+      //   sourcemap: true,
+      //   name:"PhantomDeepLinkingUtils"
+      // },
       {
         dir: "dist/bundle",
         format: "umd",
@@ -43,8 +43,8 @@ export default defineConfig(
     },
   },
   {
-    input: "dist/esm/index.d.ts",
-    output: [{ file: "dist/index.d.ts", format: "esm" }],
+    input: "dist/bundle/index.d.ts",
+    output: [{ file: "dist/index.d.ts", format: "umd" }],
     plugins: [dts()],
   }
 );
