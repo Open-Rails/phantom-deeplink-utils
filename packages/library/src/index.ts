@@ -11,3 +11,9 @@ export { default as signAndSendTransaction } from './utils/signAndSendTransactio
 export * from './utils/signAndSendTransaction'
 
 export * from './utils/util'
+
+export { default as phantomProvider } from './solana-provider'
+export * from './solana-provider'
+
+export { default as usePhantomRedirectProvider } from './hooks/usePhantomRedirectProvider'
+export * from './hooks/usePhantomRedirectProvider'

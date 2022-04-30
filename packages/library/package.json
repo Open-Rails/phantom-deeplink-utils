@@ -4,26 +4,26 @@
   "description": "not production ready",
   "license": "MIT",
   "sideEffects": false,
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./lib/index.js",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
     },
     "./package.json": "./package.json"
   },
   "files": [
-    "dist",
+    "lib",
     "LICENSE"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build:clean": "rimraf dist",
+    "build:clean": "rimraf lib",
     "build": "yarn build:clean && rollup -c",
     "declarations": "tsc -p tsconfig.json"
   },
@@ -40,5 +40,11 @@
     "rollup-plugin-typescript2": "^0.31.2",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "@solana/web3.js": "^1.41.3",
+    "axios": "^0.27.2",
+    "bs58": "^5.0.0",
+    "tweetnacl": "^1.0.3"
   }
 }
