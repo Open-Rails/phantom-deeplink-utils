@@ -3,7 +3,6 @@
 **/dist/
 **/build/
 **/lib/
-**/temp/
 .env
 
 # Yarn 2.0

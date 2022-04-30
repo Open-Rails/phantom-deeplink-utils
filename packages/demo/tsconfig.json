@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    // "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "disableReferencedProjectLoad": false /* Reduce the number of projects loaded automatically by TypeScript. */,
+    "incremental": true,
+    "paths": {
+      "stream": ["./node_modules/readable-stream"],
+      "path": ["./node_modules/path-browserify"]
+    }
+  },
+  // "references": [{ "path": "../phantom-deeplink-utils" }],
+  "include": ["src"]
+}
