@@ -1,10 +1,7 @@
 import Box from '@mui/material/Box'
 import React from 'react'
 import {
-  connectURL,
-  connect,
   initDeepLinking,
-  getTypedWindowSolana,
   DeepLinking,
   ConfigObject
 } from 'phantom-deeplink-utils'
@@ -43,7 +40,7 @@ export const PhandomDLPlayground: React.FC = () => {
 
       solana.connectDLHandler(data, nonce, phantom_encryption_public_key)
     }
-  }, [])
+  }, [location.search])
 
   const connurl = solana.connectURL
 
@@ -53,7 +50,7 @@ export const PhandomDLPlayground: React.FC = () => {
 
   return (
     <Box borderRadius="15px" border="2px solid grey">
-      PhantomDLPLayground
+      PhantomDLPLayground ({process.env.REACT_APP_IP})
       <pre>{JSON.stringify(settingsDL, null, 1)}</pre>
       <p>{location.search}</p>
       <pre> {JSON.stringify(log, null, 1)}</pre>

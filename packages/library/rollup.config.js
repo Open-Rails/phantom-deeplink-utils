@@ -5,6 +5,8 @@ import { defineConfig } from "rollup";
 import json from '@rollup/plugin-json';
 import dts from "rollup-plugin-dts";
 import pkg from "./package.json"
+import poly from "rollup-plugin-polyfill-node"
+
 
 export default defineConfig(
   {
@@ -19,7 +21,8 @@ export default defineConfig(
       },
     ],
     plugins: [
-      resolve(),
+      poly(),
+      resolve({preferBuiltins: true}),
       commonjs(),
       json(),
       typescript({ tsconfig: "./tsconfig.build.json" }),
