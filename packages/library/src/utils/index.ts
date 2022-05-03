@@ -1,11 +1,19 @@
-import { Transaction, PublicKey, Keypair } from "@solana/web3.js";
+import {
+  Transaction,
+  PublicKey,
+  Keypair,
+  SystemProgram,
+  LAMPORTS_PER_SOL,
+} from "@solana/web3.js";
 import connect from "./connect";
 import disconnect from "./disconnect";
-import signAndSendTransaction from "./signAndSendTransaction";
+import signAndSendTransaction, {
+  signAndSendTransactionURL,
+} from "./signAndSendTransaction";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
 import { connectURL } from "./connect";
-
+import { nanoid } from "nanoid";
 const LOCAL_STORAGE_KEYS = {
   PHANTOM_PUBLIC_KEY: "phantom_encryption_public_key",
   SESSION: "session",
@@ -16,6 +24,7 @@ export interface ConfigObject {
   dapp_encryption_public_key: string;
   redirect_link_connect: string;
   redirect_link_disconnect: string;
+  redirect_link_transaction: string;
 }
 
 export class DeepLinking {
@@ -86,10 +95,29 @@ export class DeepLinking {
     console.log("decripted", decrypted);
   }
 
+  signAndSendTransactionURL(transaction: Transaction) {
+    if (!this.phantomPublicKey || !this.session) {
+      return "not yet";
+    }
 
+    const textEncoder = new TextEncoder();
 
+    const encodedJSON = bs58.encode(
+      textEncoder.encode(
+        JSON.stringify({
+          transaction: bs58.encode(transaction.serialize({requireAllSignatures: false})),
+          session: this.session,
+        })
+      )
+    );
 
-
+    return signAndSendTransactionURL({
+      dapp_encryption_public_key: bs58.encode(this.xkey.publicKey),
+      nonce: bs58.encode(textEncoder.encode(nanoid(10))),
+      redirect_link: this.config.redirect_link_transaction,
+      payload: encodedJSON,
+    });
+  }
 
   disconnect() {
     const nonce = "";
@@ -114,8 +142,7 @@ export class DeepLinking {
   }
 
   public constructor(private config: ConfigObject) {
-    config.redirect_link_connect = config.redirect_link_connect;
-    config.redirect_link_disconnect = config.redirect_link_disconnect;
+    Object.assign(this.config, config);
 
     this.phantomPublicKey = localStorage.getItem(
       LOCAL_STORAGE_KEYS.PHANTOM_PUBLIC_KEY
