@@ -88,7 +88,7 @@ const Content: React.FC = () => {
           </>
         }
       />
-      <Route path="/" element={<PhandomDLPlayground />} />
+      <Route path="/*" element={<PhandomDLPlayground />} />
     </Routes>
   );
 };
