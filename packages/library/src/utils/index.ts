@@ -52,7 +52,8 @@ export class DeepLinking {
 
     if (decrypted) {
       const dataJson = JSON.parse(textDecoder.decode(decrypted))
-      if (!(dataJson.session && dataJson.phantomPublicKey)) {
+      
+      if (!(dataJson.session && dataJson.public_key)) {
         throw new Error('Phantom Connect JSON object is malformed')
       }
 
