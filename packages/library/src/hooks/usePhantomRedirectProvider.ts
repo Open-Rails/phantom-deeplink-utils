@@ -7,8 +7,7 @@ type providerConfig = {
 export default function usePhantomRedirectProvider(config: providerConfig) {
   if (!config.host) config.host = location.host
 
-  if (window.solana) return window.solana
-  else {
-    return (window.solana = phantomProvider)
-  }
+  // if (window.solana) return window.solana
+  // else
+  return (window.solana = phantomProvider)
 }

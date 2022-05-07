@@ -1,11 +1,5 @@
 import { connect } from '../utils/connect'
 
-declare global {
-  interface Window {
-    solana?: Object
-  }
-}
-
 const dappConfig = {
   app_url: 'ddd',
   dapp_encryption_public_key: 'ddddee',
@@ -18,7 +12,9 @@ const phantomProvider = {
   connect: () => {
     const { app_url, dapp_encryption_public_key, redirect_link } = dappConfig
     const query = { app_url, dapp_encryption_public_key, redirect_link }
-    connect(query)
+    console.log('asking to open connect')
+    window.open('https://google.com')
+    // connect(query)
   },
   disconnect: () => {},
   isPhantom: true,

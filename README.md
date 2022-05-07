@@ -30,6 +30,10 @@ The only problem for developers is that it may break your SPA (single page appli
 
 2. Can we request what browser we get redirected to? Because if our local-storage is stored on Google Chrome, and then Phantom redirects us from Chrome to Safari... obiously we won't be able to read that local storage lol.
 
+3. In the demo app, we have to use some of our global window declrations and some ts-ignore stuff; ideally we shouldn't have to use any of that. The global window solana object should be declared in the library itself.
+
+4. Our library is exporting a react hook. I don't know if we need this or not. What if someone wants to use it outside of react; what is the best way to structure this export, so that it's not included in that user's bundle when they use our library and not use that hook? (Tree shaking.) Should they import it using some path like 'our-library-name/react' for example?
+
 Note: for usability of the library, I believe it is slightly better to have named exports in the index.ts rather than wild-card \* exports. However it's not a huge difference.
 
 Scripts:

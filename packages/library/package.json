@@ -25,8 +25,8 @@
   "scripts": {
     "build:clean": "rimraf lib",
     "build": "yarn build:clean && rollup -c",
+    "build:dev": "yarn build:clean && rollup -c -w",
     "declarations": "tsc -p tsconfig.json",
-    "dev": "rollup -c -w",
     "test": "yarn jest"
   },
   "devDependencies": {
