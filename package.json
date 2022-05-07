@@ -7,5 +7,13 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.2.0"
+  "scripts": {
+    "dev": "concurrently -n lib,demo \"npm:dev:library\" \"npm:dev:demo\"",
+    "dev:library": "cd ./packages/library && yarn dev",
+    "dev:demo": "cd ./packages/demo && yarn dev"
+  },
+  "packageManager": "yarn@3.2.0",
+  "devDependencies": {
+    "concurrently": "^7.1.0"
+  }
 }
