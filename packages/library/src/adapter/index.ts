@@ -1,4 +1,3 @@
-import { connect } from '../methods/connect'
 import {
   WalletName,
   WalletReadyState,
@@ -6,7 +5,7 @@ import {
   WalletAdapterNetwork
 } from '@solana/wallet-adapter-base'
 import { PublicKey, SendOptions, Transaction, TransactionSignature } from '@solana/web3.js'
-import { EventEmitter } from 'events'
+import { connect } from '../methods/connect'
 
 // Notes:
 
@@ -64,12 +63,20 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
   // will call this function many times. Fortunately the browser will not open pop-up windows
   // without user interaction first
   connect(): Promise<void> {
-    const { app_url, dapp_encryption_public_key, redirect_link } = dappConfig
-    const query = { app_url, dapp_encryption_public_key, redirect_link }
-    console.log('connect() method called')
-    window.open('https://google.com')
-    // connect(query)
+    // const { app_url, dapp_encryption_public_key, redirect_link } = dappConfig
+    // const query = { app_url, dapp_encryption_public_key, redirect_link }
+    // console.log('connect() method called')
+    // window.open('https://google.com')
+
+    console.log('connect method within adapter called')
+
     return new Promise<void>((resolve, reject) => {
+      connect({
+        app_url: 'https://openrails.io',
+        dapp_encryption_public_key: 'B9ai1yoP6Axe7rT4tQNS57f5ckN6qW6TEEo4MzkF775p',
+        redirect_link: window.location.toString(),
+        cluster: 'mainnet-beta'
+      })
       resolve()
     })
   }

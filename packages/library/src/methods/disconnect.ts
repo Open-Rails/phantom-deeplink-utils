@@ -1,6 +1,6 @@
 import { Cluster } from '@solana/web3.js'
 import axios from 'axios'
-import { buildProviderMethodUrl, PhantomErrorResponse } from './util'
+import { getBaseURL, PhantomErrorResponse } from './util'
 
 export interface DisconnectParameters {
   dapp_encryption_public_key: string // The original encryption public key used from the app side for an existing Connect session.
@@ -17,7 +17,7 @@ export interface DisconnectResponse {
 }
 
 export function disconnect(params: DisconnectParameters) {
-  const disconnectUrl = buildProviderMethodUrl('disconnect')
+  const disconnectUrl = getBaseURL('disconnect')
 
   return axios.get<any, DisconnectResponse, PhantomErrorResponse>(disconnectUrl, {
     params
