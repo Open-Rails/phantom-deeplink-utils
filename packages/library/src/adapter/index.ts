@@ -2,7 +2,8 @@ import { connect } from '../methods/connect'
 import {
   WalletName,
   WalletReadyState,
-  BaseMessageSignerWalletAdapter
+  BaseMessageSignerWalletAdapter,
+  WalletAdapterNetwork
 } from '@solana/wallet-adapter-base'
 import { PublicKey, SendOptions, Transaction, TransactionSignature } from '@solana/web3.js'
 import { EventEmitter } from 'events'
@@ -120,6 +121,7 @@ const dappConfig = {
 console.log('location: ', dappConfig.redirect_link)
 
 export interface PhantomRedirectAdapterConfig {
+  network?: WalletAdapterNetwork
   appUrl?: string
   dapp_encryption_public_key?: string
   redirect_link?: string
@@ -130,6 +132,7 @@ export class PhantomRedirectAdapter extends PhantomCoreProvider {
 
   constructor(config: PhantomRedirectAdapterConfig = {}) {
     super()
+    if (!config.network) config.network = WalletAdapterNetwork.Mainnet
     this.isRedirectFlow = true
   }
 

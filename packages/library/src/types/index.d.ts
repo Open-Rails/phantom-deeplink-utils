@@ -1,4 +1,4 @@
-import { PhantomRedirectAdapter } from '../solana-provider'
+import { PhantomRedirectAdapter } from '../adapter'
 
 export interface PhantomEvents {
   connect(...args: unknown[]): unknown
