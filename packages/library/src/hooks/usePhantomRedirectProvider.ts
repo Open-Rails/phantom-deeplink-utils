@@ -1,15 +1,15 @@
-import { PhantomRedirectAdapterConfig, PhantomRedirectAdapter } from '../solana-provider'
+import { PhantomRedirectAdapterConfig, PhantomRedirectAdapter } from '../adapter'
+import mobile from 'is-mobile'
 
 declare const window: WindowSolana
 
 export default function usePhantomRedirectAdapter(config: PhantomRedirectAdapterConfig) {
+  if (window?.solana) return window.solana
+  if (!mobile()) return null // we only insert redirects in mobile browsers
+
   if (!config.appUrl) config.appUrl = location.host
 
-  // if (window.solana) return window.solana
-  // else
-  // const redirectProvider = new PhantomRedirectAdapter(config)
-  // console.log('setting window solana object', redirectProvider)
-  // return (window.solana = redirectProvider)
+  const redirectProvider = new PhantomRedirectAdapter(config)
 
-  return null
+  return (window.solana = redirectProvider)
 }

@@ -1,4 +1,4 @@
-import { connect } from '../utils/connect'
+import { connect } from '../methods/connect'
 import {
   WalletName,
   WalletReadyState,
