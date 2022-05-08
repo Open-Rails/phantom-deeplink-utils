@@ -30,7 +30,7 @@ const settingsDL: ConfigObject = {
 
 const solana = initDeepLinking(new DeepLinking(settingsDL))
 
-export const PhandomDLPlayground: React.FC = () => {
+export const PhantomDLPlayground: React.FC = () => {
   const location = useLocation()
   const [log, setLog] = React.useState<string[]>([])
   const [transactionURL, setTransactionURL] = React.useState<string>()
@@ -109,4 +109,4 @@ export const PhandomDLPlayground: React.FC = () => {
   )
 }
 
-export default PhandomDLPlayground
+export default PhantomDLPlayground

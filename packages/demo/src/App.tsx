@@ -1,5 +1,5 @@
 import React from 'react'
-import { usePhantomRedirectProvider, PhantomRedirectAdapter } from 'phantom-deeplink-utils'
+import { usePhantomRedirectAdapter, PhantomRedirectAdapter } from 'phantom-deeplink-utils'
 import './App.css'
 import '@solana/wallet-adapter-react-ui/styles.css'
 import WalletContext from './context/Wallet'
@@ -22,8 +22,8 @@ const App: React.FC = () => {
 
 const Page: React.FC = () => {
   // eslint-disable-next-line no-restricted-globals
-  const solana = usePhantomRedirectProvider({ appUrl: location.host })
-  console.log('solana object from window: ', window?.solana)
+  // const solana = usePhantomRedirectAdapter({ appUrl: location.host })
+  // console.log('solana object from window: ', window?.solana)
 
   return (
     <div>
