@@ -1,8 +1,8 @@
 import { Cluster } from '@solana/web3.js'
 import axios from 'axios'
-import { buildProviderMethodUrl, PhantomErrorResponse } from './util'
+import { getBaseURL, PhantomErrorResponse } from './util'
 
-export interface ConnectParameters {
+export interface ConnectRequest {
   // A url used to fetch app metadata (i.e. title, icon) using the same properties found in Displaying Your App.
   app_url: string
   // A public key used for end-to-end encryption. This will be used to generate a shared secret.
@@ -32,8 +32,8 @@ export interface ConnectResponse {
   }
 }
 
-export const connectURL = (params: ConnectParameters) => {
-  const connectUrl = buildProviderMethodUrl('connect')
+export const connectURL = (params: ConnectRequest) => {
+  const connectUrl = getBaseURL('connect')
 
   const queryParams = new URLSearchParams()
   queryParams.append('app_url', params.app_url)
@@ -44,15 +44,29 @@ export const connectURL = (params: ConnectParameters) => {
   return `${connectUrl}?${queryParams.toString()}`
 }
 
-export async function connect(params: ConnectParameters) {
-  const connectUrl = buildProviderMethodUrl('connect')
+// export async function connect(params: ConnectRequest) {
+//   const connectUrl = getBaseURL('connect')
 
-  return axios.get<any, ConnectResponse, PhantomErrorResponse>(connectUrl, { params }).then(res => {
-    // decode data here
-    console.log(res.data)
+//   return axios.get<any, ConnectResponse, PhantomErrorResponse>(connectUrl, { params }).then(res => {
+//     // decode data here
+//     console.log(res.data)
 
-    return res
-  })
+//     return res
+//   })
+
+export async function connect(params: ConnectRequest) {
+  const baseURL = getBaseURL('connect')
+
+  const queryParams = new URLSearchParams()
+  queryParams.append('app_url', params.app_url)
+  queryParams.append('dapp_encryption_public_key', params.dapp_encryption_public_key)
+  queryParams.append('redirect_link', params.redirect_link)
+  if (params.cluster) queryParams.append('cluster', params.cluster)
+
+  const connectURL = `${baseURL}?${queryParams.toString()}`
+
+  console.log('connect() method called. URL: ', connectURL)
+  window.open(connectURL)
 }
 
 export default connect
