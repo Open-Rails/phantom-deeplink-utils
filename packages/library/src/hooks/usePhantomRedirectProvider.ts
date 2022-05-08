@@ -1,13 +1,15 @@
-import phantomProvider from '../solana-provider'
+import { PhantomRedirectAdapterConfig, PhantomRedirectAdapter } from '../solana-provider'
 
-type providerConfig = {
-  host?: string
-}
+declare const window: WindowSolana
 
-export default function usePhantomRedirectProvider(config: providerConfig) {
-  if (!config.host) config.host = location.host
+export default function usePhantomRedirectAdapter(config: PhantomRedirectAdapterConfig) {
+  if (!config.appUrl) config.appUrl = location.host
 
   // if (window.solana) return window.solana
   // else
-  return (window.solana = phantomProvider)
+  // const redirectProvider = new PhantomRedirectAdapter(config)
+  // console.log('setting window solana object', redirectProvider)
+  // return (window.solana = redirectProvider)
+
+  return null
 }

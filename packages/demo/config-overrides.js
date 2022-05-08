@@ -35,12 +35,19 @@ module.exports = function override(config, env) {
       new ProvidePlugin({
         process: "process/browser",
       }),
+      new ProvidePlugin({
+          Buffer: ['buffer', 'Buffer'],
+      }),
+      new ProvidePlugin({
+          process: 'process/browser',
+      }),
     ],
     resolve: {
       ...config.resolve,
       fallback: {
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("stream-browserify"),
+        buffer: require.resolve("buffer"),
         // "assert": require.resolve("assert"),
         // "http": require.resolve("stream-http"),
         // "https": require.resolve("https-browserify"),

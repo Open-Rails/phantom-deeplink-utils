@@ -3,8 +3,8 @@ import typescript from "rollup-plugin-typescript2";
 import commonjs from "@rollup/plugin-commonjs";
 import { defineConfig } from "rollup";
 import json from '@rollup/plugin-json';
-import dts from "rollup-plugin-dts";
-import pkg from "./package.json"
+// import dts from "rollup-plugin-dts";
+// import pkg from "./package.json"
 import poly from "rollup-plugin-polyfill-node"
 
 

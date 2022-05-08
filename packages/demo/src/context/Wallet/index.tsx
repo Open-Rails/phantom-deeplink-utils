@@ -10,8 +10,16 @@ import {
   SolletWalletAdapter,
   TorusWalletAdapter
 } from '@solana/wallet-adapter-wallets'
+import { PhantomRedirectAdapter } from 'phantom-deeplink-utils'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { ConnectionConfig, clusterApiUrl } from '@solana/web3.js'
+
+declare global {
+  interface WindowSolana extends Window {
+    solana?: PhantomRedirectAdapter
+  }
+}
+declare const window: WindowSolana
 
 // Default styles that can be overridden by your app
 require('@solana/wallet-adapter-react-ui/styles.css')
@@ -31,7 +39,7 @@ const WalletContext: FC<{ children: ReactNode }> = ({ children }) => {
   // of wallets that your users connect to will be loaded.
   const wallets = useMemo(
     () => [
-      new PhantomWalletAdapter(),
+      window?.solana?.isPhantom ? new PhantomWalletAdapter() : new PhantomRedirectAdapter(),
       new SlopeWalletAdapter(),
       new SolflareWalletAdapter({ network }),
       new TorusWalletAdapter(),

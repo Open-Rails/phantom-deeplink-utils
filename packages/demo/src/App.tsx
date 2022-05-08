@@ -1,25 +1,18 @@
 import React from 'react'
-import { usePhantomRedirectProvider } from 'phantom-deeplink-utils'
+import { usePhantomRedirectProvider, PhantomRedirectAdapter } from 'phantom-deeplink-utils'
 import './App.css'
 import '@solana/wallet-adapter-react-ui/styles.css'
 import WalletContext from './context/Wallet'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
-// Hack -- remove this, declare it in the library instead
 declare global {
-  interface Window {
-    solana?: {
-      isPhantom?: boolean
-      isRedirectFlow?: boolean
-    }
+  interface WindowSolana extends Window {
+    solana?: PhantomRedirectAdapter
   }
 }
+declare const window: WindowSolana
 
 const App: React.FC = () => {
-  // eslint-disable-next-line no-restricted-globals
-  const solana = usePhantomRedirectProvider({ host: location.host })
-  console.log('solana object from in Context: ', solana)
-
   return (
     <WalletContext>
       <Page />
@@ -28,6 +21,10 @@ const App: React.FC = () => {
 }
 
 const Page: React.FC = () => {
+  // eslint-disable-next-line no-restricted-globals
+  const solana = usePhantomRedirectProvider({ appUrl: location.host })
+  console.log('solana object from window: ', window?.solana)
+
   return (
     <div>
       {`Solana Window object, is Phantom: ${window?.solana?.isPhantom}`} <br />
