@@ -32,8 +32,8 @@ export interface ConnectResponse {
   }
 }
 
-export const connectURL = (params: ConnectRequest) => {
-  const connectUrl = getBaseURL('connect')
+export const getConnectURL = (params: ConnectRequest) => {
+  const baseUrl = getBaseURL('connect')
 
   const queryParams = new URLSearchParams()
   queryParams.append('app_url', params.app_url)
@@ -41,7 +41,7 @@ export const connectURL = (params: ConnectRequest) => {
   queryParams.append('redirect_link', params.redirect_link)
   if (params.cluster) queryParams.append('cluster', params.cluster)
 
-  return `${connectUrl}?${queryParams.toString()}`
+  return `${baseUrl}?${queryParams.toString()}`
 }
 
 // export async function connect(params: ConnectRequest) {
@@ -55,18 +55,12 @@ export const connectURL = (params: ConnectRequest) => {
 //   })
 
 export async function connect(params: ConnectRequest) {
-  const baseURL = getBaseURL('connect')
-
-  const queryParams = new URLSearchParams()
-  queryParams.append('app_url', params.app_url)
-  queryParams.append('dapp_encryption_public_key', params.dapp_encryption_public_key)
-  queryParams.append('redirect_link', params.redirect_link)
-  if (params.cluster) queryParams.append('cluster', params.cluster)
-
-  const connectURL = `${baseURL}?${queryParams.toString()}`
+  const connectURL = getConnectURL(params)
 
   console.log('connect() method called. URL: ', connectURL)
-  window.open(connectURL)
+
+  window.location.replace(connectURL)
+  // window.open(connectURL)
 }
 
 export default connect

@@ -55,6 +55,7 @@ const WalletContext: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <ConnectionProvider config={connectionConfig} endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
+        {/* <WalletProvider wallets={wallets} autoConnect> */}
         <WalletModalProvider>
           <div>Network being used: {network.valueOf()} </div>
           {children}
