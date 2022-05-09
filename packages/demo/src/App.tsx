@@ -22,8 +22,8 @@ const App: React.FC = () => {
 
 const Page: React.FC = () => {
   // eslint-disable-next-line no-restricted-globals
-  // const solana = usePhantomRedirectAdapter({ appUrl: location.host })
-  // console.log('solana object from window: ', window?.solana)
+  const solana = usePhantomRedirectAdapter({ appUrl: location.host })
+  console.log('solana object from window: ', window?.solana)
 
   return (
     <div>

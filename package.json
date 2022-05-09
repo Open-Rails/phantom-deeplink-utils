@@ -4,16 +4,12 @@
   "version": "0.1.2",
   "author": "OpenRails",
   "license": "MIT",
-  "scripts": {
-    "start": "cd packages/library && yarn build && cd ../demo && yarn start",
-    "dev": "cd packages/library && yarn build && cd ../demo && yarn dev"
-  },
-  "devDependencies": {},
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n lib,demo \"npm:dev:library\" \"npm:dev:demo\"",
+    "start": "cd packages/library && yarn build && cd ../demo && yarn start",
+    "dev": "cd packages/library && yarn build && cd ../demo && yarn dev",
     "dev:library": "cd ./packages/library && yarn dev",
     "dev:demo": "cd ./packages/demo && yarn dev"
   },
