@@ -98,6 +98,7 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
         redirect_link: window.location.toString(),
         cluster: 'mainnet-beta'
       })
+      // TODO add a reject timeout here
       // setTimeout(function () {
       // window.location.replace("https://itunes.apple.com/app/id12345678"); }, 2000);
       // this connect will never resolve
