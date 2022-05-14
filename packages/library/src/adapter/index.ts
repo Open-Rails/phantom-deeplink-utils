@@ -97,7 +97,7 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
         // Connect Method Response
         if (data.session && data.public_key) {
           localStorage.setItem('phantomAdapterSession', data.session)
-          localStorage.setItem('phantomAdapterPublicKey', data.public_key)
+          localStorage.setItem('phantomWalletPublicKey', data.public_key)
           this.emit('connect', new PublicKey(data.public_key))
 
           // TODO fill in this response
@@ -119,11 +119,11 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
     }
 
     // Set final properties
-    const publicKeyString = localStorage.getItem('phantomAdapterPublicKey')
-    if (publicKeyString) this._publicKey = new PublicKey(publicKeyString)
-
     const sessionString = localStorage.getItem('phantomAdapterSession')
     if (sessionString) this._session = sessionString
+
+    const publicKeyString = localStorage.getItem('phantomWalletPublicKey')
+    if (publicKeyString) this._publicKey = new PublicKey(publicKeyString)
 
     if (this._phantomEncryptionPublicKey) {
       this._sharedSecret = nacl.box.before(
@@ -194,6 +194,16 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
       })
 
       registerTimeout(PhantomError.INTERNAL_ERROR, reject)
+
+      // remove variables from memory and storage
+      this.isConnected = false
+      this._publicKey = null
+      this._session = null
+      this._phantomEncryptionPublicKey = null
+      this._sharedSecret = null
+      localStorage.removeItem('phantomEncryptionPublicKey')
+      localStorage.removeItem('phantomAdapterSession')
+      localStorage.removeItem('phantomWalletPublicKey')
 
       window.location.replace(url)
     })
