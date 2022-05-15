@@ -17,7 +17,7 @@ export interface PhantomRedirectAdapterConfig {
   // A public key used for end-to-end encryption. This will be used to generate a shared secret.
   dappEncryptionKeyPair?: nacl.BoxKeyPair
   // The network that should be used for subsequent interactions. Can be either: mainnet-beta, testnet, or devnet. Defaults to mainnet-beta.
-  cluster?: WalletAdapterNetwork
+  network?: WalletAdapterNetwork
   // (The URL where Phantom should redirect the user dependent upon the method used
   redirectURLs?: RedirectURLs
 }

@@ -8,12 +8,10 @@ export const AppRouting = {
   Chat: "/chat",
 };
 
-console.log(process.env);
-
 export const createAppUrl = (path: string) =>
   `http://${
     process.env.NODE_ENV === "development"
-      ? process.env.REACT_APP_IP + ":3000"
+      ? process.env.REACT_APP_IP + ":3000/phantom"
       : window.location.host // "openrails.io"
   }/${path}`;
 

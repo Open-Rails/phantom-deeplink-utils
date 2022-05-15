@@ -11,7 +11,8 @@
     "start": "cd packages/library && yarn build && cd ../demo && yarn start",
     "dev": "cd packages/library && yarn build && cd ../demo && yarn dev",
     "dev:library": "cd ./packages/library && yarn dev",
-    "dev:demo": "cd ./packages/demo && yarn dev"
+    "dev:demo": "cd ./packages/demo && yarn dev",
+    "watch": "concurrently -n demo,library \"yarn dev:demo\" \"yarn dev:library\""
   },
   "packageManager": "yarn@3.2.0",
   "devDependencies": {

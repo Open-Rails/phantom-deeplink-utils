@@ -6,7 +6,7 @@ import {
   WalletError
 } from '@solana/wallet-adapter-base'
 import { PublicKey, SendOptions, Transaction, TransactionSignature } from '@solana/web3.js'
-import { getConnectURL } from '../methods/connect'
+import { getConnectURL } from '../methods/connect';
 import { getDisconnectURL } from 'methods/disconnect'
 import {
   registerTimeout,
@@ -47,10 +47,10 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
   response: Object | null = null
   private _redirectURLs: RedirectURLs
   private _appURL: string
-  private _cluster: WalletAdapterNetwork
+  private _network: WalletAdapterNetwork
   // private _wallet: PhantomWallet | null
 
-  constructor(config: PhantomRedirectAdapterConfig = {}) {
+  constructor(config: PhantomRedirectAdapterConfig) {
     super()
     // WalletProvider stores the user's preference for wallets in this localStorage key-value pair
     // Erasing this prevents WalletProvider's aggressive reconnect behavior
@@ -60,14 +60,16 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
     this._appURL = config.appURL || window.location.origin
     this._dappEncryptionKeyPair =
       config.dappEncryptionKeyPair || retrieveOrGenerateAndStoreEncryptionKeyPair()
-    this._cluster = config.cluster || WalletAdapterNetwork.Mainnet
+    this._network = config.network || WalletAdapterNetwork.Mainnet
     this._redirectURLs = config.redirectURLs || {}
+
+    console.log("this._dappEncryptionKeyPair", this._dappEncryptionKeyPair)
 
     this.url = getConnectURL({
       appURL: this._appURL,
       dappEncryptionPublicKey: bs58.encode(this._dappEncryptionKeyPair.publicKey),
       redirectURL: this._redirectURLs?.connect || window.location.toString(),
-      cluster: this._cluster
+      cluster: this._network
     })
 
     // Handle a response-redirect. This will parse the query-params and update our adapter's state
@@ -119,9 +121,8 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
     }
 
     // Set final properties
-    const sessionString = localStorage.getItem('phantomAdapterSession')
-    if (sessionString) this._session = sessionString
-
+    this._session = localStorage.getItem('phantomAdapterSession')
+    
     const publicKeyString = localStorage.getItem('phantomWalletPublicKey')
     if (publicKeyString) this._publicKey = new PublicKey(publicKeyString)
 
@@ -151,7 +152,7 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
   }
 
   get connected(): boolean {
-    return !!this.isConnected
+    return this.isConnected
   }
 
   get readyState(): WalletReadyState {
@@ -173,7 +174,7 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
         appURL: this._appURL,
         dappEncryptionPublicKey: bs58.encode(this._dappEncryptionKeyPair.publicKey),
         redirectURL: this._redirectURLs?.connect || window.location.toString(),
-        cluster: this._cluster
+        cluster: this._network
       })
 
       registerTimeout(PhantomError.INTERNAL_ERROR, reject)

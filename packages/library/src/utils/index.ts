@@ -1,66 +1,96 @@
-import mobile from 'is-mobile'
-import nacl from 'tweetnacl'
-import bs58 from 'bs58'
-import { PhantomErrorResponse } from 'types'
+import mobile from "is-mobile";
+import nacl from "tweetnacl";
+import bs58 from "bs58";
+import { PhantomErrorResponse } from "types";
 
-declare const window: WindowSolana
+declare const window: WindowSolana;
 
-export const getBaseURL = (method: string, version: string = 'v1') =>
-  `https://phantom.app/ul/${version}/${method}`
+export const getBaseURL = (method: string, version: string = "v1") =>
+  `https://phantom.app/ul/${version}/${method}`;
 
 export function shouldPhantomRedirect() {
-  if (window?.solana?.isPhantom) return false
-  if (!mobile()) return false
+  // We need this to be true to debug lol
+  if (process.env.NODE_ENV === "development") {
+    return true;
+  }
 
-  return true
+  if (window?.solana?.isPhantom) return false;
+  if (!mobile()) return false;
+
+  return true;
 }
 
-export function retrieveOrGenerateAndStoreEncryptionKeyPair() {
-  const storedKeyPair = JSON.parse(localStorage.getItem('dappKeyPair') || '')
+export function retrieveOrGenerateAndStoreEncryptionKeyPair(): nacl.BoxKeyPair {
+  const kp = nacl.box.keyPair();
+  const storedKeyPair = JSON.parse(localStorage.getItem("dappKeyPair") || "{}");
   if (storedKeyPair.publicKey && storedKeyPair.secretKey) {
-    return storedKeyPair as nacl.BoxKeyPair
+    kp.publicKey = bs58.decode(storedKeyPair.publicKey);
+    kp.secretKey = bs58.decode(storedKeyPair.secretKey);
+
+    return kp;
   }
 
-  const keyPair = nacl.box.keyPair()
-  localStorage.setItem('dappKeyPair', JSON.stringify(keyPair))
-  return keyPair
+  localStorage.setItem(
+    "dappKeyPair",
+    JSON.stringify({
+      publicKey: bs58.encode(kp.publicKey),
+      secretKey: bs58.encode(kp.secretKey),
+    })
+  );
+  return kp;
 }
 
-export function retrieveOrParseAndStorePhantomPublicKey(phantomPublicKeyB58?: string) {
+export function retrieveOrParseAndStorePhantomPublicKey(
+  phantomPublicKeyB58?: string
+) {
   if (phantomPublicKeyB58) {
-    const phantomPublicKey = bs58.decode(phantomPublicKeyB58)
-    localStorage.setItem('phantomEncryptionPublicKey', JSON.stringify(phantomPublicKey))
-    return phantomPublicKey
+    const phantomPublicKey = bs58.decode(phantomPublicKeyB58);
+    localStorage.setItem(
+      "phantomEncryptionPublicKey",
+      phantomPublicKeyB58
+    );
+    return phantomPublicKey.length > 0 ? phantomPublicKey : phantomPublicKey;
   }
 
-  const storedPhantomPublicKey = JSON.parse(
-    localStorage.getItem('phantomEncryptionPublicKey') || ''
-  )
-  if (Array.isArray(storedPhantomPublicKey) && typeof storedPhantomPublicKey[0] === 'number')
-    // @ts-ignore
-    return storedPhantomPublicKey as Uint8Array
-
-  return null
+  const decodedPhantomPublicKey =  bs58.decode(localStorage.getItem("phantomEncryptionPublicKey") || "")
+  const storedPhantomPublicKey = decodedPhantomPublicKey.length > 0 ? decodedPhantomPublicKey : null
+  
+  return storedPhantomPublicKey;
 }
 
-export const decryptPayload = (data: string, nonce: string, sharedSecret: Uint8Array) => {
-  const decryptedData = nacl.box.open.after(bs58.decode(data), bs58.decode(nonce), sharedSecret)
+export const decryptPayload = (
+  data: string,
+  nonce: string,
+  sharedSecret: Uint8Array
+) => {
+  const decryptedData = nacl.box.open.after(
+    bs58.decode(data),
+    bs58.decode(nonce),
+    sharedSecret
+  );
   if (!decryptedData) {
-    throw new Error('Unable to decrypt data')
+    throw new Error("Unable to decrypt data");
   }
-  return JSON.parse(Buffer.from(decryptedData).toString('utf8'))
-}
+  return JSON.parse(Buffer.from(decryptedData).toString("utf8"));
+};
 
 export const encryptPayload = (payload: Object, sharedSecret: Uint8Array) => {
-  const nonce = nacl.randomBytes(24)
+  const nonce = nacl.randomBytes(24);
 
-  const encryptedPayload = nacl.box.after(Buffer.from(JSON.stringify(payload)), nonce, sharedSecret)
+  const encryptedPayload = nacl.box.after(
+    Buffer.from(JSON.stringify(payload)),
+    nonce,
+    sharedSecret
+  );
 
-  return [nonce, encryptedPayload]
-}
+  return [nonce, encryptedPayload];
+};
 
-export const registerTimeout = (error: PhantomErrorResponse, reject: (reason?: any) => void) => {
+export const registerTimeout = (
+  error: PhantomErrorResponse,
+  reject: (reason?: any) => void
+) => {
   setTimeout(() => {
-    reject(error)
-  }, 2000)
-}
+    reject(error);
+  }, 2000);
+};
