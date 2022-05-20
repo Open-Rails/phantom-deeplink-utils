@@ -1,6 +1,5 @@
 import { getBaseURL } from "../utils";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { decryptPayload } from "../utils/index";
 import nacl from "tweetnacl";
 import bs58 from "bs58";
 
@@ -43,18 +42,4 @@ export const getConnectURL = (params: ConnectRequest) => {
   if (params.cluster) queryParams.append("cluster", params.cluster);
 
   return `${baseUrl}?${queryParams.toString()}`;
-};
-
-export const handleConnectRedirect = (
-  params: ConnectResponse,
-  dappSecretKey: Uint8Array
-) => {
-  const sharedSecret = nacl.box.before(
-    bs58.decode(params.phantom_encryption_public_key),
-    dappSecretKey
-  );
-
-  const payload = decryptPayload(params.data, params.nonce, sharedSecret);
-
-  return { sharedSecret, payload };
 };

@@ -28,32 +28,20 @@ export const PhandomDLPlayground: React.FC = () => {
   let [searchParams, setSearchParams] = useSearchParams();
   const [log, setLog] = React.useState<string[]>([]);
   const [transactionURL, setTransactionURL] = React.useState<string>();
+
+  
+  React.useEffect(()=>{
+
+
+  }, [location])
+
+
   const connection = React.useMemo(() => {
     const network = clusterApiUrl("devnet");
 
     return new Connection(network);
   }, []);
 
-  // React.useEffect(() => {
-  //   (async () => {
-  //     const myPubKey = new PublicKey(solana.xkey.publicKey);
-  //     const transaction = new Transaction();
-  //     transaction.add(
-  //       SystemProgram.transfer({
-  //         fromPubkey: myPubKey,
-  //         toPubkey: new PublicKey(
-  //           "HwogrHZpHhdWLchRszcPGg1PhEREnvjepMFS2uC6hEr3"
-  //         ),
-  //         lamports: 0.1 * LAMPORTS_PER_SOL,
-  //       })
-  //     );
-  //     transaction.recentBlockhash = (
-  //       await connection.getLatestBlockhash()
-  //     ).blockhash;
-  //     transaction.feePayer = myPubKey;
-  //     setTransactionURL(solana.signAndSendTransactionURL(transaction));
-  //   })();
-  // }, [connection]);
 
   React.useEffect(() => {
     if (method === "connect") {

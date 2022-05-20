@@ -1,7 +1,6 @@
 import { Cluster } from "@solana/web3.js";
 import axios from "axios";
 import { getBaseURL } from "../utils";
-import { decryptPayload } from "../utils/index";
 
 export interface SignAndSendTransactionParameters {
   dapp_encryption_public_key: string; // (required): A public key used for end-to-end encryption. This will be used to generate a shared secret. For more information on how Phantom handles shared secrets, please review Encryption.
@@ -41,17 +40,4 @@ export const signAndSendTransactionURL = (
   queryParams.append("payload", params.payload);
 
   return `${signAndSendURL}?${queryParams.toString()}`;
-};
-
-export const handleSignAndSendTransactionRedirect = (
-  params: SignAndSendTransactionResponse,
-  sharedSecred: Uint8Array
-) => {
-  const payload: { signature: string } = decryptPayload(
-    params.data,
-    params.nonce,
-    sharedSecred
-  );
-
-  return payload;
 };

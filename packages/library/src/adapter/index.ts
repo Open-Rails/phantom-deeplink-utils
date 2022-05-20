@@ -3,20 +3,36 @@ import {
   WalletReadyState,
   BaseMessageSignerWalletAdapter,
   WalletAdapterNetwork,
-  WalletError
-} from '@solana/wallet-adapter-base'
-import { PublicKey, SendOptions, Transaction, TransactionSignature } from '@solana/web3.js'
-import { getConnectURL } from '../methods/connect';
-import { getDisconnectURL } from 'methods/disconnect'
+  WalletError,
+} from "@solana/wallet-adapter-base";
 import {
+  Keypair,
+  PublicKey,
+  SendOptions,
+  SystemProgram,
+  Transaction,
+  TransactionSignature,
+} from "@solana/web3.js";
+import { getConnectURL } from "../methods/connect";
+import { getDisconnectURL } from "methods/disconnect";
+import {
+  encryptPayload,
   registerTimeout,
   retrieveOrGenerateAndStoreEncryptionKeyPair,
-  retrieveOrParseAndStorePhantomPublicKey
-} from '../utils'
-import bs58 from 'bs58'
-import { PhantomRedirectAdapterConfig, PhantomErrorResponse, RedirectURLs } from '../types'
-import nacl from 'tweetnacl'
-import PhantomError from 'types/errors'
+  retrieveOrParseAndStorePhantomPublicKey,
+} from "../utils";
+import bs58 from "bs58";
+import {
+  PhantomRedirectAdapterConfig,
+  PhantomErrorResponse,
+  RedirectURLs,
+} from "../types";
+import nacl from "tweetnacl";
+import PhantomError from "types/errors";
+import { signAndSendTransactionURL } from "methods/signAndSendTransaction";
+import { signMessageURL } from "../methods/signMessage";
+import { signTransactionURL } from "../methods/signTransaction";
+import { connect } from "http2";
 
 // Notes:
 
@@ -26,63 +42,66 @@ import PhantomError from 'types/errors'
 
 // events emitted: 'connect', 'disconnect'
 
-export const PhantomWalletName = 'Phantom' as WalletName
+export const PhantomWalletName = "Phantom" as WalletName;
 
 export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
   // These properties are for the WalletProvider React component
-  name = PhantomWalletName
+  name = PhantomWalletName;
   icon =
-    'data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB3aWR0aD0iMzQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1MzRiYjEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM1NTFiZjkiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii44MiIvPjwvbGluZWFyR3JhZGllbnQ+PGNpcmNsZSBjeD0iMTciIGN5PSIxNyIgZmlsbD0idXJsKCNhKSIgcj0iMTciLz48cGF0aCBkPSJtMjkuMTcwMiAxNy4yMDcxaC0yLjk5NjljMC02LjEwNzQtNC45NjgzLTExLjA1ODE3LTExLjA5NzUtMTEuMDU4MTctNi4wNTMyNSAwLTEwLjk3NDYzIDQuODI5NTctMTEuMDk1MDggMTAuODMyMzctLjEyNDYxIDYuMjA1IDUuNzE3NTIgMTEuNTkzMiAxMS45NDUzOCAxMS41OTMyaC43ODM0YzUuNDkwNiAwIDEyLjg0OTctNC4yODI5IDEzLjk5OTUtOS41MDEzLjIxMjMtLjk2MTktLjU1MDItMS44NjYxLTEuNTM4OC0xLjg2NjF6bS0xOC41NDc5LjI3MjFjMCAuODE2Ny0uNjcwMzggMS40ODQ3LTEuNDkwMDEgMS40ODQ3LS44MTk2NCAwLTEuNDg5OTgtLjY2ODMtMS40ODk5OC0xLjQ4NDd2LTIuNDAxOWMwLS44MTY3LjY3MDM0LTEuNDg0NyAxLjQ4OTk4LTEuNDg0Ny44MTk2MyAwIDEuNDkwMDEuNjY4IDEuNDkwMDEgMS40ODQ3em01LjE3MzggMGMwIC44MTY3LS42NzAzIDEuNDg0Ny0xLjQ4OTkgMS40ODQ3LS44MTk3IDAtMS40OS0uNjY4My0xLjQ5LTEuNDg0N3YtMi40MDE5YzAtLjgxNjcuNjcwNi0xLjQ4NDcgMS40OS0xLjQ4NDcuODE5NiAwIDEuNDg5OS42NjggMS40ODk5IDEuNDg0N3oiIGZpbGw9InVybCgjYikiLz48L3N2Zz4K'
-  url: string // directs users to this url if WalletReadyState == NotDetected
-  private _readyState: WalletReadyState = WalletReadyState.NotDetected
-
-  private _connecting: boolean = false
-  private _publicKey: PublicKey | null = null
-  private _session: string | null = null
-  private _dappEncryptionKeyPair: nacl.BoxKeyPair
-  private _phantomEncryptionPublicKey: Uint8Array | null = null
-  private _sharedSecret: Uint8Array | null = null
-  isPhantom: boolean = true
-  isConnected: boolean = false
-  response: Object | null = null
-  private _redirectURLs: RedirectURLs
-  private _appURL: string
-  private _network: WalletAdapterNetwork
+    "data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB3aWR0aD0iMzQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iLjUiIHgyPSIuNSIgeTE9IjAiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM1MzRiYjEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM1NTFiZjkiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYiIgeDE9Ii41IiB4Mj0iLjUiIHkxPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii44MiIvPjwvbGluZWFyR3JhZGllbnQ+PGNpcmNsZSBjeD0iMTciIGN5PSIxNyIgZmlsbD0idXJsKCNhKSIgcj0iMTciLz48cGF0aCBkPSJtMjkuMTcwMiAxNy4yMDcxaC0yLjk5NjljMC02LjEwNzQtNC45NjgzLTExLjA1ODE3LTExLjA5NzUtMTEuMDU4MTctNi4wNTMyNSAwLTEwLjk3NDYzIDQuODI5NTctMTEuMDk1MDggMTAuODMyMzctLjEyNDYxIDYuMjA1IDUuNzE3NTIgMTEuNTkzMiAxMS45NDUzOCAxMS41OTMyaC43ODM0YzUuNDkwNiAwIDEyLjg0OTctNC4yODI5IDEzLjk5OTUtOS41MDEzLjIxMjMtLjk2MTktLjU1MDItMS44NjYxLTEuNTM4OC0xLjg2NjF6bS0xOC41NDc5LjI3MjFjMCAuODE2Ny0uNjcwMzggMS40ODQ3LTEuNDkwMDEgMS40ODQ3LS44MTk2NCAwLTEuNDg5OTgtLjY2ODMtMS40ODk5OC0xLjQ4NDd2LTIuNDAxOWMwLS44MTY3LjY3MDM0LTEuNDg0NyAxLjQ4OTk4LTEuNDg0Ny44MTk2MyAwIDEuNDkwMDEuNjY4IDEuNDkwMDEgMS40ODQ3em01LjE3MzggMGMwIC44MTY3LS42NzAzIDEuNDg0Ny0xLjQ4OTkgMS40ODQ3LS44MTk3IDAtMS40OS0uNjY4My0xLjQ5LTEuNDg0N3YtMi40MDE5YzAtLjgxNjcuNjcwNi0xLjQ4NDcgMS40OS0xLjQ4NDcuODE5NiAwIDEuNDg5OS42NjggMS40ODk5IDEuNDg0N3oiIGZpbGw9InVybCgjYikiLz48L3N2Zz4K";
+  url: string; // directs users to this url if WalletReadyState == NotDetected
+  private _readyState: WalletReadyState = WalletReadyState.NotDetected;
+  
+  private _connecting: boolean = false;
+  private _publicKey: PublicKey | null = null;
+  private _session: string | null = null;
+  private _dappEncryptionKeyPair: nacl.BoxKeyPair;
+  private _phantomEncryptionPublicKey: Uint8Array | null = null;
+  private _sharedSecret: Uint8Array | null = null;
+  isPhantom: boolean = true;
+  isConnected: boolean = false;
+  response: Object | null = null;
+  private _redirectURLs: RedirectURLs;
+  private _appURL: string;
+  private _network: WalletAdapterNetwork;
   // private _wallet: PhantomWallet | null
 
-  constructor(config: PhantomRedirectAdapterConfig) {
-    super()
+  constructor(config: PhantomRedirectAdapterConfig, private _localStorageKeyBuilder =(keyName: string)=>{ return `PDB-${keyName}`}) {
+    super();
     // WalletProvider stores the user's preference for wallets in this localStorage key-value pair
     // Erasing this prevents WalletProvider's aggressive reconnect behavior
     // if (localStorage.getItem('walletName') === 'Phantom') localStorage.removeItem('walletName')
 
     // Fill in config with default values and generate connectURL
-    this._appURL = config.appURL || window.location.origin
+    this._appURL = config.appURL || window.location.origin;
     this._dappEncryptionKeyPair =
-      config.dappEncryptionKeyPair || retrieveOrGenerateAndStoreEncryptionKeyPair()
-    this._network = config.network || WalletAdapterNetwork.Mainnet
-    this._redirectURLs = config.redirectURLs || {}
+      config.dappEncryptionKeyPair ||
+      retrieveOrGenerateAndStoreEncryptionKeyPair();
+    this._network = config.network || WalletAdapterNetwork.Mainnet;
+    this._redirectURLs = config.redirectURLs || {
+      connect: `${window.location.host}/onConnect`,
+      disconnect: `${window.location.host}/onDisconnect`,
+      signAllTransactions: `${window.location.host}/onSignAllTransactions`,
+      signAndSendTransaction: `${window.location.host}/onSignAndSendTransaction`,
+      signMessage: `${window.location.host}/onSignMessage`,
+      signTransaction: `${window.location.host}/onSignTransaction`,
+    };
 
-    console.log("this._dappEncryptionKeyPair", this._dappEncryptionKeyPair)
+    console.log("this._dappEncryptionKeyPair", this._dappEncryptionKeyPair);
 
-    this.url = getConnectURL({
-      appURL: this._appURL,
-      dappEncryptionPublicKey: bs58.encode(this._dappEncryptionKeyPair.publicKey),
-      redirectURL: this._redirectURLs?.connect || window.location.toString(),
-      cluster: this._network
-    })
+    this.url = this.connectURL;
 
     // Handle a response-redirect. This will parse the query-params and update our adapter's state
-    if (config.redirectURLs) this._redirectURLs = config.redirectURLs
-    const urlParams = new URLSearchParams(location.search)
+    if (config.redirectURLs) this._redirectURLs = config.redirectURLs;
+    const urlParams = new URLSearchParams(location.search);
 
     // handle our dapp and phantom encryption keys
     this._phantomEncryptionPublicKey = retrieveOrParseAndStorePhantomPublicKey(
-      urlParams.get('phantom_encryption_public_key') || undefined
-    )
+      urlParams.get("phantom_encryption_public_key") || undefined
+    );
 
-    const nonceString = urlParams.get('nonce')
-    const dataString = urlParams.get('data')
+    const nonceString = urlParams.get("nonce");
+    const dataString = urlParams.get("data");
 
     if (nonceString && dataString && this._phantomEncryptionPublicKey) {
       const decryptedData = nacl.box.open(
@@ -90,20 +109,20 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
         bs58.decode(nonceString),
         this._phantomEncryptionPublicKey,
         this._dappEncryptionKeyPair.secretKey
-      )
+      );
 
       if (decryptedData) {
-        const textDecoder = new TextDecoder('utf-8')
-        const data = JSON.parse(textDecoder.decode(decryptedData))
+        const textDecoder = new TextDecoder("utf-8");
+        const data = JSON.parse(textDecoder.decode(decryptedData));
 
         // Connect Method Response
         if (data.session && data.public_key) {
-          localStorage.setItem('phantomAdapterSession', data.session)
-          localStorage.setItem('phantomWalletPublicKey', data.public_key)
-          this.emit('connect', new PublicKey(data.public_key))
+          localStorage.setItem("phantomAdapterSession", data.session);
+          localStorage.setItem("phantomWalletPublicKey", data.public_key);
+          this.emit("connect", new PublicKey(data.public_key));
 
           // TODO fill in this response
-          this.response = {}
+          this.response = {};
         }
 
         // SignAndSendTransaction Method Response, or SignMessageResponse
@@ -115,48 +134,48 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
         }
 
         // SignTransaction Method Response
-        if (data.transactions && typeof data.transactions === 'string') {
+        if (data.transactions && typeof data.transactions === "string") {
         }
       }
     }
 
     // Set final properties
-    this._session = localStorage.getItem('phantomAdapterSession')
-    
-    const publicKeyString = localStorage.getItem('phantomWalletPublicKey')
-    if (publicKeyString) this._publicKey = new PublicKey(publicKeyString)
+    this._session = localStorage.getItem("phantomAdapterSession");
+
+    const publicKeyString = localStorage.getItem("phantomWalletPublicKey");
+    if (publicKeyString) this._publicKey = new PublicKey(publicKeyString);
 
     if (this._phantomEncryptionPublicKey) {
       this._sharedSecret = nacl.box.before(
         this._phantomEncryptionPublicKey,
         this._dappEncryptionKeyPair.secretKey
-      )
+      );
     }
 
-    if (this._sharedSecret && this._session) this.isConnected = true
+    if (this._sharedSecret && this._session) this.isConnected = true;
 
     // handle phantom error responses
-    const errorCode = urlParams.get('errorCode')
-    const errorMessage = urlParams.get('errorMessage')
+    const errorCode = urlParams.get("errorCode");
+    const errorMessage = urlParams.get("errorMessage");
     if (errorCode && errorMessage) {
       // TODO: throw error
     }
   }
 
   get publicKey(): PublicKey | null {
-    return this._publicKey
+    return this._publicKey;
   }
 
   get connecting(): boolean {
-    return this._connecting
+    return this._connecting;
   }
 
   get connected(): boolean {
-    return this.isConnected
+    return this.isConnected;
   }
 
   get readyState(): WalletReadyState {
-    return this._readyState
+    return this._readyState;
   }
 
   // If this is being used within the React WalletContext component, and autoConnect is on,
@@ -164,62 +183,60 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
   // will call this function many times. Fortunately the browser will not open pop-up windows
   // without user interaction first
   connect(): Promise<void> {
-    console.log('connect method within adapter called')
+    console.log("connect method within adapter called");
 
     // this promise will never resolve because we are redirected
     return new Promise<void>((resolve, reject) => {
-      this._connecting = true
+      this._connecting = true;
 
-      const url = getConnectURL({
-        appURL: this._appURL,
-        dappEncryptionPublicKey: bs58.encode(this._dappEncryptionKeyPair.publicKey),
-        redirectURL: this._redirectURLs?.connect || window.location.toString(),
-        cluster: this._network
-      })
+      const url = this.connectURL;
+      // registerTimeout(PhantomError.INTERNAL_ERROR, reject)
 
-      registerTimeout(PhantomError.INTERNAL_ERROR, reject)
-
-      window.location.replace(url)
-    })
+      window.location.replace(url);
+    });
   }
 
   disconnect(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      if (!this._session || !this._sharedSecret) throw PhantomError.INVALID_INPUT
+      if (!this._session || !this._sharedSecret)
+        throw PhantomError.INVALID_INPUT;
 
       const url = getDisconnectURL({
-        dappEncryptionPublicKey: bs58.encode(this._dappEncryptionKeyPair.publicKey),
-        redirectURL: this._redirectURLs?.disconnect || window.location.toString(),
+        dappEncryptionPublicKey: bs58.encode(
+          this._dappEncryptionKeyPair.publicKey
+        ),
+        redirectURL:
+          this._redirectURLs?.disconnect || window.location.toString(),
         session: this._session,
-        sharedSecret: this._sharedSecret
-      })
+        sharedSecret: this._sharedSecret,
+      });
 
-      registerTimeout(PhantomError.INTERNAL_ERROR, reject)
+      // registerTimeout(PhantomError.INTERNAL_ERROR, reject)
 
       // remove variables from memory and storage
-      this.isConnected = false
-      this._publicKey = null
-      this._session = null
-      this._phantomEncryptionPublicKey = null
-      this._sharedSecret = null
-      localStorage.removeItem('phantomEncryptionPublicKey')
-      localStorage.removeItem('phantomAdapterSession')
-      localStorage.removeItem('phantomWalletPublicKey')
+      this.isConnected = false;
+      this._publicKey = null;
+      this._session = null;
+      this._phantomEncryptionPublicKey = null;
+      this._sharedSecret = null;
+      localStorage.removeItem("phantomEncryptionPublicKey");
+      localStorage.removeItem("phantomAdapterSession");
+      localStorage.removeItem("phantomWalletPublicKey");
 
-      window.location.replace(url)
-    })
+      window.location.replace(url);
+    });
   }
 
   signTransaction(transaction: Transaction): Promise<Transaction> {
     return new Promise<Transaction>((resolve, reject) => {
-      resolve(new Transaction())
-    })
+      resolve(new Transaction());
+    });
   }
 
   signAllTransactions(transactions: Transaction[]): Promise<Transaction[]> {
     return new Promise<Transaction[]>((resolve, reject) => {
-      resolve([new Transaction()])
-    })
+      resolve([new Transaction()]);
+    });
   }
 
   signAndSendTransaction(
@@ -227,40 +244,141 @@ export class PhantomCoreProvider extends BaseMessageSignerWalletAdapter {
     options?: SendOptions
   ): Promise<{ signature: TransactionSignature }> {
     return new Promise((resolve, reject) => {
-      resolve({ signature: '' })
-    })
+      resolve({ signature: "" });
+    });
   }
 
   signMessage(message: Uint8Array): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {
-      resolve(new Uint8Array())
-    })
+      resolve(new Uint8Array());
+    });
   }
 
   _handleDisconnect(...args: unknown[]): unknown {
-    return
+    return;
+  }
+
+  signTransactionURL(serializedTransaction: Buffer) {
+    if (!this._phantomEncryptionPublicKey || !this._sharedSecret) {
+      return null;
+    }
+
+    const payload = {
+      session: this._session,
+      transaction: bs58.encode(Buffer.from(serializedTransaction)),
+    };
+
+    const [nonce, encryptedPayload] = encryptPayload(
+      payload,
+      this._sharedSecret
+    );
+
+    return signTransactionURL({
+      dapp_encryption_public_key: bs58.encode(this._phantomEncryptionPublicKey),
+      nonce: bs58.encode(nonce),
+      payload: bs58.encode(encryptedPayload),
+      redirect_link: this._redirectURLs.signTransaction,
+    });
+  }
+
+  signMessageUrl(message: string) {
+    if (!this._sharedSecret || !this._session) {
+      return null;
+    }
+
+    const payload = {
+      session: this._session,
+      message: bs58.encode(Buffer.from(message)),
+    };
+
+    const [nonce, encryptedPayload] = encryptPayload(
+      payload,
+      this._sharedSecret
+    );
+
+    return signMessageURL({
+      dapp_encryption_public_key: bs58.encode(
+        this._dappEncryptionKeyPair.publicKey
+      ),
+      nonce: bs58.encode(nonce),
+      payload: bs58.encode(encryptedPayload),
+
+      redirect_link: this._redirectURLs.signMessage,
+    });
+  }
+
+  signAndSendTransactionURL(serializedTransaction: Buffer) {
+    if (!this._sharedSecret) {
+      return null;
+    }
+
+    const payload = {
+      sesion: this._session,
+      transaction: bs58.encode(serializedTransaction),
+    };
+
+    const [nonce, encryptedPayload] = encryptPayload(
+      payload,
+      this._sharedSecret
+    );
+
+    return signAndSendTransactionURL({
+      dapp_encryption_public_key: bs58.encode(
+        this._dappEncryptionKeyPair.publicKey
+      ),
+      nonce: bs58.encode(nonce),
+      redirect_link: this._redirectURLs.signAndSendTransaction,
+      payload: bs58.encode(encryptedPayload),
+    });
+  }
+
+  get connectURL() {
+    return getConnectURL({
+      appURL: this._appURL,
+      dappEncryptionPublicKey: bs58.encode(
+        this._dappEncryptionKeyPair.publicKey
+      ),
+      redirectURL: this._redirectURLs?.connect,
+      cluster: this._network,
+    });
+  }
+
+  get disconnectURL() {
+    if (!this._session || !this._sharedSecret) {
+      return null;
+    }
+
+    return getDisconnectURL({
+      dappEncryptionPublicKey: bs58.encode(
+        this._dappEncryptionKeyPair.publicKey
+      ),
+      redirectURL: this._redirectURLs.disconnect!,
+      session: this._session,
+      sharedSecret: this._sharedSecret,
+    });
   }
 }
 
+
 const dappConfig = {
-  app_url: 'ddd',
-  dapp_encryption_public_key: 'ddddee',
-  redirect_link: window.location.href
-}
+  app_url: "ddd",
+  dapp_encryption_public_key: "ddddee",
+  redirect_link: window.location.href,
+};
 
 export class PhantomRedirectAdapter extends PhantomCoreProvider {
-  isRedirectFlow?: boolean
+  isRedirectFlow?: boolean;
 
   constructor(config: PhantomRedirectAdapterConfig = {}) {
-    super(config)
-    this.isRedirectFlow = true
+    super(config);
+    this.isRedirectFlow = true;
   }
 
   request(request: Object): Promise<Object> {
     return new Promise((resolve, reject) => {
-      resolve({})
-    })
+      resolve({});
+    });
   }
 }
 
-export default PhantomRedirectAdapter
+export default PhantomRedirectAdapter;

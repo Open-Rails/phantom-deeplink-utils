@@ -4,6 +4,21 @@ import './App.css'
 import '@solana/wallet-adapter-react-ui/styles.css'
 import WalletContext from './context/Wallet'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
+import { useLocation } from 'react-router-dom'
+import { Connection, clusterApiUrl, PublicKey, Transaction, SystemProgram } from '@solana/web3.js'
+import { decryptPayload, encryptPayload } from 'phantom-deeplink-utils/lib/utils'
+import nacl from 'tweetnacl'
+import bs58 from 'bs58'
+import { createAppUrl } from './playground/routing';
+import { getConnectURL } from '../../library/src/methods/connect';
+
+const NETWORK = clusterApiUrl("mainnet-beta");
+const onConnectRedirectLink = createAppUrl("onConnect");
+const onDisconnectRedirectLink = createAppUrl("onDisconnect");
+const onSignAndSendTransactionRedirectLink = createAppUrl("onSignAndSendTransaction");
+const onSignAllTransactionsRedirectLink = createAppUrl("onSignAllTransactions");
+const onSignTransactionRedirectLink = createAppUrl("onSignTransaction");
+const onSignMessageRedirectLink = createAppUrl("onSignMessage");
 
 declare global {
   interface WindowSolana extends Window {
@@ -21,8 +36,7 @@ const App: React.FC = () => {
 }
 
 const Page: React.FC = () => {
-  // eslint-disable-next-line no-restricted-globals
-  const solana = usePhantomRedirectAdapter({ appUrl: location.host })
+  const solana = usePhantomRedirectAdapter({ appUrl: window.location.host })
   console.log('solana object from window: ', window?.solana)
 
   return (
@@ -51,6 +65,10 @@ const Page: React.FC = () => {
       <br />
       <div>
         <b>RPC Methods:</b>
+
+
+
+        {}
       </div>
     </div>
   )
