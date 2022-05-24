@@ -1,5 +1,4 @@
 import { getBaseURL } from "../utils";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 
 export interface ConnectRequest {
   app_url: string; // (required): A url used to fetch app metadata (i.e. title, icon) using the same properties found in Displaying Your App.

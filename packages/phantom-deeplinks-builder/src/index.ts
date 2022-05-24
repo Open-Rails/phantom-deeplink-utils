@@ -2,7 +2,4 @@
 
 export * from './methods'
 export * from './adapter'
-
-
-
-
+export * from './utils'

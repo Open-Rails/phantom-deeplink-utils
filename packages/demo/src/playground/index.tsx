@@ -31,8 +31,6 @@ export const PhandomDLPlayground: React.FC = () => {
 
   
   React.useEffect(()=>{
-
-
   }, [location])
 
 
@@ -55,19 +53,6 @@ export const PhandomDLPlayground: React.FC = () => {
 
       console.log(searchParams);
       console.log(JSON.stringify(searchParams));
-
-      if (
-        searchParams.has("data") &&
-        searchParams.has("nonce") &&
-        searchParams.has("phantom_encryption_public_key")
-      ) {
-        // solana.connectDLHandler(
-        //   searchParams.get("data")!,
-        //   searchParams.get("nonce")!,
-        //   searchParams.get("phantom_encryption_public_key")!
-        // );
-      }
-      
     }
   }, [location.search, method, searchParams]);
 
@@ -77,7 +62,6 @@ export const PhandomDLPlayground: React.FC = () => {
       
       <p>{location.search}</p>
       <p style={{ overflowWrap: "break-word" }}>
-        {" "}
         {JSON.stringify(log, null, 2)}
       </p>
       <p>key</p>

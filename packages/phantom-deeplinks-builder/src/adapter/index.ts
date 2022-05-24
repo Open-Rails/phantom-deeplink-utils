@@ -1,10 +1,5 @@
-import {
-  WalletAdapterNetwork,
-} from "@solana/wallet-adapter-base";
-import {
-
-  Transaction,
-} from "@solana/web3.js";
+import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { Transaction } from "@solana/web3.js";
 import { getConnectURL } from "../methods/connect";
 import { getDisconnectURL } from "methods/disconnect";
 import { registerTimeout } from "../utils";
@@ -18,20 +13,31 @@ import nacl from "tweetnacl";
 import { signAndSendTransactionURL } from "methods/signAndSendTransaction";
 import { signMessageURL } from "../methods/signMessage";
 import { signTransactionURL } from "../methods/signTransaction";
+import { signAllTransactionsURL } from "methods";
 
 export class PhantomStateManager {
   // computed / acquired later ------------------------------------------
   private _session: string | null = null;
   private _sharedSecret: Uint8Array | null = null;
   private _phantomEncryptionPublicKey: Uint8Array | null = null;
-  
+
   // Developer input ----------------------------------------------------
   private _dappEncryptionKeyPair: nacl.BoxKeyPair;
   private _redirectURLs: RedirectURLs;
   private _appURL: string;
   private _network: WalletAdapterNetwork;
 
-  constructor(config: PhantomRedirectAdapterConfig, private _localStorageKeyBuilder =(keyName: string)=>{ return `PDB-${keyName}`}) {
+  public get dappEncryptionPublicKey(){
+    return this._dappEncryptionKeyPair.publicKey
+  }
+
+
+  constructor(
+    config: PhantomRedirectAdapterConfig,
+    private _localStorageKeyBuilder = (keyName: string) => {
+      return `PDB-${keyName}`;
+    }
+  ) {
     // Fill in config with default values and generate connectURL
     this._appURL = config.appURL || window.location.origin;
     this._dappEncryptionKeyPair =
@@ -52,10 +58,10 @@ export class PhantomStateManager {
     const urlParams = new URLSearchParams(location.search);
 
     // handle our dapp and phantom encryption keys
-    this._phantomEncryptionPublicKey = this.retrieveOrParseAndStorePhantomPublicKey(
-      urlParams.get("phantom_encryption_public_key") || undefined
-    );
-
+    this._phantomEncryptionPublicKey =
+      this.retrieveOrParseAndStorePhantomPublicKey(
+        urlParams.get("phantom_encryption_public_key") || undefined
+      );
 
     // Set final properties
     this._session = localStorage.getItem("phantomAdapterSession");
@@ -169,32 +175,28 @@ export class PhantomStateManager {
   }
   private saveState() {}
 
-  async signAllTransactions (){
-    if(!this._sharedSecret){
-      return null
+  signAllTransactionsURL(serializedTransactions: string[]) {
+    if (!this._sharedSecret) {
+      return null;
     }
 
-    const transactions = await Promise.all([
-      new Transaction(),
-      new Transaction(),
-    ]);
+    const payload = {
+      session: this._session,
+      transactions: serializedTransactions,
+    };
 
-    const serializedTransactions = transactions.map((t) =>
-    bs58.encode(
-      t.serialize({
-        requireAllSignatures: false,
-      })
-    )
-  );
+    const [nonce, encryptedPayload] = this.encryptPayload(
+      payload,
+      this._sharedSecret
+    );
 
-  const payload = {
-    session: this._session,
-    transactions: serializedTransactions,
-  };
 
-  const [nonce, encryptedPayload] = this.encryptPayload(payload, this._sharedSecret);
-
-  
+    return signAllTransactionsURL({
+      dapp_encryption_public_key: bs58.encode(this._dappEncryptionKeyPair.publicKey),
+      nonce: bs58.encode(nonce),
+      payload: bs58.encode(encryptedPayload),
+      redirect_link: this._redirectURLs.signAllTransactions
+    })
   }
 
   signTransactionURL(serializedTransaction: Buffer) {
@@ -273,11 +275,11 @@ export class PhantomStateManager {
 
   get connectURL() {
     return getConnectURL({
-      appURL: this._appURL,
-      dappEncryptionPublicKey: bs58.encode(
+      app_url: this._appURL,
+      dapp_encryption_public_key: bs58.encode(
         this._dappEncryptionKeyPair.publicKey
       ),
-      redirectURL: this._redirectURLs?.connect,
+      redirect_link: this._redirectURLs?.connect,
       cluster: this._network,
     });
   }
@@ -287,17 +289,20 @@ export class PhantomStateManager {
       return null;
     }
 
-    const [nonce, encryptedPayload] = this.encryptPayload({
-      session: this._session
-    },this._sharedSecret)
-
+    const [nonce, encryptedPayload] = this.encryptPayload(
+      {
+        session: this._session,
+      },
+      this._sharedSecret
+    );
 
     return getDisconnectURL({
-      dapp_encryption_public_key: bs58.encode(this._dappEncryptionKeyPair.publicKey),
+      dapp_encryption_public_key: bs58.encode(
+        this._dappEncryptionKeyPair.publicKey
+      ),
       redirect_link: this._redirectURLs.disconnect!,
-      payload,
-      nonce
-      // : this._sharedSecret,
+      payload: bs58.encode(encryptedPayload),
+      nonce: bs58.encode(nonce),
     });
   }
 }

@@ -1,7 +1,4 @@
 import React from "react";
-import "./App.css";
-import "@solana/wallet-adapter-react-ui/styles.css";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useLocation } from "react-router-dom";
 import {
   Connection,
@@ -13,8 +10,10 @@ import {
 import nacl from "tweetnacl";
 import bs58 from "bs58";
 import { createAppUrl } from "./playground/routing";
+import { PhantomStateManager } from "@openrails/phantom-deeplinks-builder";
 
 const NETWORK = clusterApiUrl("mainnet-beta");
+
 const onConnectRedirectLink = createAppUrl("onConnect");
 const onDisconnectRedirectLink = createAppUrl("onDisconnect");
 const onSignAndSendTransactionRedirectLink = createAppUrl(
@@ -28,12 +27,81 @@ const App: React.FC = () => {
   return <Page />;
 };
 
+const MethodURL: React.FC<{
+  methodName: React.ReactNode;
+  methodURL: React.ReactNode;
+}> = ({ methodName, methodURL }) => (
+  <div>
+    <span>{methodName}</span>
+    <span>{methodURL}</span>
+  </div>
+);
+
 const Page: React.FC = () => {
+  const connection = React.useMemo(() => new Connection(NETWORK), []);
+  const phantomStateManager = React.useMemo(() => {
+    return new PhantomStateManager({});
+  }, []);
+
+  const createTransferTransaction = React.useCallback(async () => {
+    const phantomWalletPublicKey = phantomStateManager.dappEncryptionPublicKey;
+
+    if (!phantomWalletPublicKey)
+      throw new Error("missing public key from user");
+    let transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: phantomWalletPublicKey,
+        toPubkey: phantomWalletPublicKey,
+        lamports: 100,
+      })
+    );
+    transaction.feePayer = phantomWalletPublicKey;
+    const anyTransaction: any = transaction;
+    anyTransaction.recentBlockhash = (
+      await connection.getLatestBlockhash()
+    ).blockhash;
+    return transaction;
+  }, [connection, phantomStateManager]);
+
+  const [messageToSign, setMessageToSign] = React.useState(
+    "This is the message being signed"
+  );
+
+
+  const [transactionBuffer, setTransactionBuffer] = React.useState<Buffer>(Buffer.alloc(0))
+    const [serializedTransactions, setSerializedTransactions] = React.useState<string[]>([])
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+
+  React.useEffect(() => {
+    if (!connection) {
+      setTransactions([]);
+      return;
+    }
+
+    Promise.all([
+      createTransferTransaction(),
+      createTransferTransaction(),
+      createTransferTransaction(),
+    ]).then((transactions => {
+      
+      const serializedTransactions = transactions.map((t) =>
+      bs58.encode(
+        t.serialize({
+          requireAllSignatures: false,
+        })
+      )
+    );
+
+    setSerializedTransactions(serializedTransactions)
+      setTransactionBuffer(transactions[0].serialize({requireAllSignatures: false}))
+      setSerializedTransactions(serializedTransactions)
+      setTransactions(transactions)}));
+  }, [connection, createTransferTransaction]);
+
   return (
     <div>
       <div>
         <b>React Methods:</b>
-        <div>{<WalletMultiButton />}</div>
       </div>
       <br />
       <div>
@@ -54,7 +122,30 @@ const Page: React.FC = () => {
       <div>
         <b>RPC Methods:</b>
 
-        {}
+        <MethodURL
+          methodName={"connect"}
+          methodURL={phantomStateManager.connectURL}
+        />
+        <MethodURL
+          methodName={"disconnect"}
+          methodURL={phantomStateManager.disconnectURL}
+        />
+        <MethodURL
+          methodName={"signAllTransactions"}
+          methodURL={phantomStateManager.signAllTransactionsURL(serializedTransactions)}
+        />
+        <MethodURL
+          methodName={"signAndSendTransactionURL"}
+          methodURL={phantomStateManager.signAndSendTransactionURL(transactionBuffer)}
+        />
+        <MethodURL
+          methodName={"signMessageUrl"}
+          methodURL={phantomStateManager.signMessageUrl(messageToSign)}
+        />
+        <MethodURL
+          methodName={"signTransactionURL"}
+          methodURL={phantomStateManager.signTransactionURL(transactionBuffer)}
+        />
       </div>
     </div>
   );
