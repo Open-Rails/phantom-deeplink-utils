@@ -1,12 +1,13 @@
 {
-  "name": "phantom-deeplinks-builder",
-  "version": "0.1.9",
+  "name": "@openrails/phantom-deeplinks-builder",
+  "version": "0.0.1",
   "description": "not production ready",
   "license": "MIT",
   "sideEffects": false,
   "main": "lib/index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
+  "private": false,
   "exports": {
     ".": {
       "import": "./lib/index.js",

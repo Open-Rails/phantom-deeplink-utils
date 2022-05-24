@@ -1,5 +1,5 @@
 {
-  "name": "phantom-deeplink-utils",
+  "name": "@openrails/phantom-deeplink-utils",
   "version": "0.1.9",
   "description": "not production ready",
   "license": "MIT",

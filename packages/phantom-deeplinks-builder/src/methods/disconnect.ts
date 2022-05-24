@@ -1,5 +1,4 @@
 import { getBaseURL } from "../utils";
-import bs58 from "bs58";
 
 export interface DisconnectRequestParams {
   dapp_encryption_public_key: string; // (required): The original encryption public key used from the app side for an existing Connect session.
@@ -29,5 +28,3 @@ export const getDisconnectURL = (params: DisconnectRequestParams) => {
 
   return `${baseUrl}?${queryParams.toString()}`;
 };
-
-export const handleDisconnectRedirect = () => {};

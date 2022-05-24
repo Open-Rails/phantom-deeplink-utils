@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    // "composite": true,
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "disableReferencedProjectLoad": false /* Reduce the number of projects loaded automatically by TypeScript. */,
@@ -24,6 +24,6 @@
       "path": ["./node_modules/path-browserify"]
     }
   },
-  // "references": [{ "path": "../phantom-deeplink-utils" }],
+  "references": [{ "path": "../phantom-deeplinks-builder" }],
   "include": ["src"]
 }

@@ -1,5 +1,3 @@
-import { Cluster } from "@solana/web3.js";
-import axios from "axios";
 import { getBaseURL } from "../utils";
 
 export interface SignAndSendTransactionParameters {
@@ -41,3 +39,5 @@ export const signAndSendTransactionURL = (
 
   return `${signAndSendURL}?${queryParams.toString()}`;
 };
+
+export default signAndSendTransactionURL

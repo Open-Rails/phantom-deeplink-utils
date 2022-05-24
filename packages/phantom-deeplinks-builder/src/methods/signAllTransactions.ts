@@ -1,11 +1,10 @@
 import { getBaseURL } from "../utils";
 
-
 export interface SignAllTransactionsParameters {
   dapp_encryption_public_key: string; // (required): A public key used for end-to-end encryption. This will be used to generate a shared secret. For more information on how Phantom handles shared secrets, please review Encryption.
   nonce: string; // (required): A nonce used for encrypting the request, encoded in base58.
   redirect_link: string; // (required): The URI where Phantom should redirect the user upon connection. Please review Specifying Redirects for more details.
-  payload : string //(required): An encrypted JSON string with the following fields:
+  payload: string; //(required): An encrypted JSON string with the following fields:
   // {
   //   "transactions": [
   //     "...", // serialized transaction, bs58-encoded
@@ -27,7 +26,7 @@ export interface SignAllTransactionsResponse {
   // signature: string // The first signature in the transaction, which can be used as its transaction id.
 }
 
-export const signAndSendTransactionURL = (
+export const signAllTransactionsURL = (
   params: SignAllTransactionsParameters
 ) => {
   const signAndSendURL = getBaseURL("signAllTransactions");

@@ -1,7 +1,5 @@
 import { getBaseURL } from "../utils";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import nacl from "tweetnacl";
-import bs58 from "bs58";
 
 export interface ConnectRequest {
   appURL: string;
