@@ -1,14 +1,10 @@
 import { getBaseURL } from "../utils";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { decryptPayload } from "../utils/index";
-import nacl from "tweetnacl";
-import bs58 from "bs58";
 
 export interface ConnectRequest {
-  appURL: string;
-  dappEncryptionPublicKey: string;
-  redirectURL: string;
-  cluster?: WalletAdapterNetwork;
+  app_url: string; // (required): A url used to fetch app metadata (i.e. title, icon) using the same properties found in Displaying Your App.
+  dapp_encryption_public_key: string; // (required): A public key used for end-to-end encryption. This will be used to generate a shared secret. For more information on how Phantom handles shared secrets, please review Encryption.
+  redirect_link: string; // (required): The URI where Phantom should redirect the user upon connection. Please review Specifying Redirects for more details.
+  cluster: string; // (optional): The network that should be used for subsequent interactions. Can be either: mainnet-beta, testnet, or devnet. Defaults to mainnet-beta.
 }
 
 export interface ConnectResponse {
@@ -34,27 +30,13 @@ export const getConnectURL = (params: ConnectRequest) => {
   const baseUrl = getBaseURL("connect");
 
   const queryParams = new URLSearchParams();
-  queryParams.append("app_url", params.appURL);
+  queryParams.append("app_url", params.app_url);
   queryParams.append(
     "dapp_encryption_public_key",
-    params.dappEncryptionPublicKey
+    params.dapp_encryption_public_key
   );
-  queryParams.append("redirect_link", params.redirectURL);
+  queryParams.append("redirect_link", params.redirect_link);
   if (params.cluster) queryParams.append("cluster", params.cluster);
 
   return `${baseUrl}?${queryParams.toString()}`;
-};
-
-export const handleConnectRedirect = (
-  params: ConnectResponse,
-  dappSecretKey: Uint8Array
-) => {
-  const sharedSecret = nacl.box.before(
-    bs58.decode(params.phantom_encryption_public_key),
-    dappSecretKey
-  );
-
-  const payload = decryptPayload(params.data, params.nonce, sharedSecret);
-
-  return { sharedSecret, payload };
 };

@@ -1,14 +1,14 @@
-import { Cluster } from "@solana/web3.js";
-import nacl from "tweetnacl";
-import { encryptPayload, getBaseURL } from "../utils";
-import { PhantomErrorResponse } from "../types";
-import bs58 from "bs58";
+import { getBaseURL } from "../utils";
 
 export interface DisconnectRequest {
-  dappEncryptionPublicKey: string; // The original encryption public key used from the app side for an existing Connect session, base58 encoded
-  redirectURL: string; // The URI where Phantom should redirect the user upon completion.
-  session: string; // string: The session token received from the Connect method.
-  sharedSecret: Uint8Array;
+  dapp_encryption_public_key: string; // (required): The original encryption public key used from the app side for an existing Connect session.
+  nonce: string; // (required): A nonce used for encrypting the request, encoded in base58.
+  redirect_link: string; // (required): The URI where Phantom should redirect the user upon completion. Please review Specifying Redirects for more details.
+  payload: string; // (required): An encrypted JSON string with the following fields:
+  // {
+  //     "session": "...", // token received from the connect method
+  // }
+  // session (required): The session token received from the Connect method. Please see Handling Sessions for more details.
 }
 
 export interface DisconnectResponse {
@@ -17,19 +17,13 @@ export interface DisconnectResponse {
 
 export const getDisconnectURL = (params: DisconnectRequest) => {
   const baseUrl = getBaseURL("disconnect");
-  const [nonce, encryptedPayload] = encryptPayload(
-    { session: params.session },
-    params.sharedSecret
-  );
 
   const queryParams = new URLSearchParams({
-    dapp_encryption_public_key: params.dappEncryptionPublicKey,
-    nonce: bs58.encode(nonce),
-    redirect_link: params.redirectURL,
-    payload: bs58.encode(encryptedPayload),
+    dapp_encryption_public_key: params.dapp_encryption_public_key,
+    nonce: params.nonce,
+    redirect_link: params.redirect_link,
+    payload: params.payload,
   });
 
   return `${baseUrl}?${queryParams.toString()}`;
 };
-
-export const handleDisconnectRedirect = () => {};

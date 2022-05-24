@@ -287,13 +287,17 @@ export class PhantomStateManager {
       return null;
     }
 
+    const [nonce, encryptedPayload] = this.encryptPayload({
+      session: this._session
+    },this._sharedSecret)
+
+
     return getDisconnectURL({
-      dappEncryptionPublicKey: bs58.encode(
-        this._dappEncryptionKeyPair.publicKey
-      ),
-      redirectURL: this._redirectURLs.disconnect!,
-      session: this._session,
-      sharedSecret: this._sharedSecret,
+      dapp_encryption_public_key: bs58.encode(this._dappEncryptionKeyPair.publicKey),
+      redirect_link: this._redirectURLs.disconnect!,
+      payload,
+      nonce
+      // : this._sharedSecret,
     });
   }
 }
