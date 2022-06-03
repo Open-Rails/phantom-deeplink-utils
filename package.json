@@ -1,11 +1,10 @@
 {
-  "name": "phantom-deeplink-utils-repo",
   "private": true,
-  "version": "0.1.2",
   "author": "OpenRails",
   "license": "MIT",
   "workspaces": [
-    "packages/*"
+    "./packages/demo",
+    "./packages/phantom-deeplinks-builder"
   ],
   "scripts": {
     "start": "cd packages/library && yarn build && cd ../demo && yarn start",

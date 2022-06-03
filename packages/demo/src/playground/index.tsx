@@ -17,10 +17,7 @@ import {
   clusterApiUrl,
 } from "@solana/web3.js";
 import { QRCodeCanvas } from "qrcode.react";
-
 const kp = new Keypair();
-
-
 
 export const PhandomDLPlayground: React.FC = () => {
   const location = useLocation();

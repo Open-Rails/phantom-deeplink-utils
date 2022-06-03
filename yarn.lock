@@ -1877,17 +1877,6 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@openrails/phantom-deeplinks-builder@link:packages/phantom-deeplinks-builder":
-  version "0.0.1"
-  dependencies:
-    "@solana/web3.js" "^1.41.3"
-    axios "^0.27.2"
-    bs58 "^5.0.0"
-    encoding "^0.1.13"
-    is-mobile "^3.1.1"
-    nanoid "^3.3.4"
-    tweetnacl "^1.0.3"
-
 "@pedrouid/environment@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@pedrouid/environment/-/environment-1.0.1.tgz#858f0f8a057340e0b250398b75ead77d6f4342ec"
